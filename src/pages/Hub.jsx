@@ -25,7 +25,7 @@ export default function HubPage() {
         try {
             const currentUser = await base44.auth.me();
             if (!currentUser) {
-                window.location.href = createPageUrl('Login');
+                base44.auth.redirectToLogin();
                 return;
             }
             setUser(currentUser);
@@ -34,7 +34,7 @@ export default function HubPage() {
             setNodes(userNodes);
         } catch (e) {
             console.error(e);
-            window.location.href = createPageUrl('Login');
+            base44.auth.redirectToLogin();
         } finally {
             setIsLoading(false);
         }

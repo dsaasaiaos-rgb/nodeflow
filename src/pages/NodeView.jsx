@@ -45,7 +45,7 @@ export default function NodeViewPage() {
 
             const currentUser = await base44.auth.me();
             if (!currentUser) {
-                window.location.href = createPageUrl('Login');
+                base44.auth.redirectToLogin();
                 return;
             }
             setUser(currentUser);
@@ -65,7 +65,7 @@ export default function NodeViewPage() {
             }
         } catch (e) {
             console.error(e);
-            window.location.href = createPageUrl('Login');
+            base44.auth.redirectToLogin();
         } finally {
             setIsLoading(false);
         }
