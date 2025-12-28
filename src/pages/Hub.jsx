@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import Sidebar from '../components/Sidebar';
-import CreateNodeModal from '../components/modals/CreateNodeModal';
-import JoinNodeModal from '../components/modals/JoinNodeModal';
+import Sidebar from '@/components/Sidebar';
+import CreateNodeModal from '@/components/modals/CreateNodeModal';
+import JoinNodeModal from '@/components/modals/JoinNodeModal';
 import { Button } from "@/components/ui/button";
 import { Plus, Key, ExternalLink, Home, Users, Clock, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
