@@ -192,7 +192,7 @@ Original Text:\n${currentContent}`;
     ];
 
     return (
-        <div className="flex h-screen bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
+        <div className="flex h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950 overflow-hidden">
             <Sidebar 
                 user={user}
                 nodes={nodes}
@@ -204,12 +204,12 @@ Original Text:\n${currentContent}`;
                 setSidebarOpen={setSidebarOpen}
             />
             
-            <div className="flex-1 flex flex-col min-w-0 bg-white">
+            <div className="flex-1 flex flex-col min-w-0 bg-white dark:bg-gray-900">
                 {/* Header */}
-                <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-white shadow-sm">
+                <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center bg-white dark:bg-gray-900 shadow-sm">
                     <div>
                         <div className="flex items-center gap-3">
-                            <h1 className="text-2xl font-bold text-gray-900">{editedNode?.name}</h1>
+                            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{editedNode?.name}</h1>
                             <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${
                                 editedNode?.status === 'Active' ? 'bg-green-100 text-green-700 border-green-200' : 
                                 editedNode?.status === 'Completed' ? 'bg-blue-100 text-blue-700 border-blue-200' :
@@ -219,7 +219,7 @@ Original Text:\n${currentContent}`;
                                 {editedNode?.status}
                             </span>
                         </div>
-                        <a href={editedNode?.url} target="_blank" rel="noreferrer" className="text-sm text-indigo-600 hover:underline flex items-center gap-1 mt-1">
+                        <a href={editedNode?.url} target="_blank" rel="noreferrer" className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 mt-1">
                             {editedNode?.url} <ExternalLink className="w-3 h-3" />
                         </a>
                     </div>
@@ -241,7 +241,7 @@ Original Text:\n${currentContent}`;
                     {/* Main Content */}
                     <div className="flex-1 flex flex-col min-w-0">
                         {/* Tabs */}
-                        <div className="px-6 pt-4 border-b border-gray-200 bg-white">
+                        <div className="px-6 pt-4 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
                             <div className="flex gap-6 overflow-x-auto">
                                 {tabs.map(tab => (
                                     <button
@@ -249,8 +249,8 @@ Original Text:\n${currentContent}`;
                                         onClick={() => setActiveTab(tab.id)}
                                         className={`pb-3 px-1 border-b-2 font-semibold text-sm flex items-center gap-2 whitespace-nowrap transition-all ${
                                             activeTab === tab.id
-                                                ? 'border-indigo-600 text-indigo-600'
-                                                : 'border-transparent text-gray-500 hover:text-gray-700'
+                                                ? 'border-indigo-600 dark:border-indigo-400 text-indigo-600 dark:text-indigo-400'
+                                                : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
                                         }`}
                                     >
                                         <tab.icon className="w-4 h-4" />
@@ -261,10 +261,10 @@ Original Text:\n${currentContent}`;
                         </div>
 
                         {/* Tab Content */}
-                        <div className="flex-1 overflow-y-auto p-6 bg-gray-50">
+                        <div className="flex-1 overflow-y-auto p-6 bg-gray-50 dark:bg-gray-950">
                             <div className="max-w-4xl mx-auto">
                                 {activeTab === 'info' && editedNode && (
-                                    <div className="space-y-6 bg-white p-8 rounded-2xl border border-gray-200 shadow-sm">
+                                    <div className="space-y-6 bg-white dark:bg-gray-800 p-8 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm">
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <div className="col-span-1 md:col-span-2">
                                                 <Label className="text-sm font-bold text-gray-700 mb-2">Project Name</Label>
@@ -324,7 +324,7 @@ Original Text:\n${currentContent}`;
                                 )}
 
                                 {['agreement', 'sow', 'oosw', 'code'].includes(activeTab) && (
-                                    <div className="h-full flex flex-col bg-white p-8 rounded-2xl border border-gray-200 shadow-sm">
+                                    <div className="h-full flex flex-col bg-white dark:bg-gray-800 p-8 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm">
                                         <div className="flex justify-between items-end mb-4">
                                             <Label className="text-lg font-bold text-gray-900 capitalize">
                                                 {activeTab === 'code' ? 'Technical Implementation Notes' : 
@@ -361,18 +361,18 @@ Original Text:\n${currentContent}`;
                     </div>
 
                     {/* Chat Sidebar */}
-                    <div className="w-96 border-l border-gray-200 bg-white flex-col hidden lg:flex">
-                        <div className="p-5 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
-                            <h3 className="font-bold text-gray-900 flex items-center gap-2 text-lg">
+                    <div className="w-96 border-l border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 flex-col hidden lg:flex">
+                        <div className="p-5 border-b border-gray-200 dark:border-gray-800 bg-gradient-to-r from-gray-50 to-white dark:from-gray-900 dark:to-gray-900">
+                            <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-2 text-lg">
                                 <MessageSquare className="w-5 h-5" />
                                 Team Chat
                             </h3>
                         </div>
                         
-                        <div className="flex-1 overflow-y-auto p-5 space-y-4 bg-gray-50">
+                        <div className="flex-1 overflow-y-auto p-5 space-y-4 bg-gray-50 dark:bg-gray-950">
                             {messages.length === 0 ? (
-                                <div className="text-center text-gray-400 mt-12 text-sm">
-                                    <MessageSquare className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+                                <div className="text-center text-gray-400 dark:text-gray-500 mt-12 text-sm">
+                                    <MessageSquare className="w-12 h-12 mx-auto mb-3 text-gray-300 dark:text-gray-600" />
                                     <p className="font-medium">No messages yet</p>
                                     <p>Start the conversation!</p>
                                 </div>
@@ -380,13 +380,13 @@ Original Text:\n${currentContent}`;
                                 messages.map((msg) => (
                                     <div key={msg.id} className={`flex flex-col ${msg.userId === user.id ? 'items-end' : 'items-start'}`}>
                                         <div className="flex items-baseline gap-2 mb-1">
-                                            <span className="text-xs font-bold text-gray-700">{msg.userName}</span>
-                                            <span className="text-[10px] text-gray-400">{new Date(msg.created_date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                                            <span className="text-xs font-bold text-gray-700 dark:text-gray-300">{msg.userName}</span>
+                                            <span className="text-[10px] text-gray-400 dark:text-gray-500">{new Date(msg.created_date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
                                         </div>
                                         <div className={`px-4 py-2.5 rounded-2xl text-sm max-w-[85%] shadow-sm ${
                                             msg.userId === user.id 
                                                 ? 'bg-gradient-to-br from-indigo-600 to-purple-600 text-white rounded-br-none' 
-                                                : 'bg-white text-gray-800 border border-gray-200 rounded-bl-none'
+                                                : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-bl-none'
                                         }`}>
                                             {msg.body}
                                         </div>
@@ -396,11 +396,11 @@ Original Text:\n${currentContent}`;
                             <div ref={messagesEndRef} />
                         </div>
 
-                        <div className="p-5 border-t border-gray-200 bg-white">
+                        <div className="p-5 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
                             <button 
                                 onClick={handleMagicDraft}
                                 disabled={aiLoading || messages.length === 0}
-                                className="mb-3 text-xs flex items-center gap-1.5 text-purple-600 hover:text-purple-700 disabled:opacity-50 font-medium"
+                                className="mb-3 text-xs flex items-center gap-1.5 text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 disabled:opacity-50 font-medium"
                             >
                                 {aiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
                                 Magic Draft
