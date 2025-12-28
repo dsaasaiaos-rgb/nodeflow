@@ -44,6 +44,10 @@ export default function NodeViewPage() {
             const nodeId = urlParams.get('nodeId');
 
             const currentUser = await base44.auth.me();
+            if (!currentUser) {
+                window.location.href = createPageUrl('Login');
+                return;
+            }
             setUser(currentUser);
 
             const { data: { nodes: userNodes } } = await base44.functions.invoke("listMyNodes");
@@ -61,6 +65,7 @@ export default function NodeViewPage() {
             }
         } catch (e) {
             console.error(e);
+            window.location.href = createPageUrl('Login');
         } finally {
             setIsLoading(false);
         }

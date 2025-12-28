@@ -24,12 +24,17 @@ export default function HubPage() {
         setIsLoading(true);
         try {
             const currentUser = await base44.auth.me();
+            if (!currentUser) {
+                window.location.href = createPageUrl('Login');
+                return;
+            }
             setUser(currentUser);
 
             const { data: { nodes: userNodes } } = await base44.functions.invoke("listMyNodes");
             setNodes(userNodes);
         } catch (e) {
             console.error(e);
+            window.location.href = createPageUrl('Login');
         } finally {
             setIsLoading(false);
         }
