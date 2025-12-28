@@ -10,7 +10,7 @@ import {
     MessageSquare, Send, Sparkles, Loader2, ExternalLink, Home
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { createPageUrl } from './utils';
+import { createPageUrl } from '@/utils';
 
 export default function NodeViewPage() {
     const [user, setUser] = useState(null);

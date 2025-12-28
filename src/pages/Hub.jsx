@@ -6,8 +6,7 @@ import JoinNodeModal from '../components/modals/JoinNodeModal';
 import { Button } from "@/components/ui/button";
 import { Plus, Key, ExternalLink, Home, Users, Clock, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { createPageUrl } from './utils';
+import { createPageUrl } from '@/utils';
 
 export default function HubPage() {
     const [user, setUser] = useState(null);
