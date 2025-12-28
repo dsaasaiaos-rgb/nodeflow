@@ -77,7 +77,7 @@ export default function CreateNodeModal({ onClose, onCreated }) {
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Create New Node</h3>
                 <div className="space-y-5">
                     <div>
-                        <Label htmlFor="name" className="text-sm font-semibold text-gray-700 mb-2">Client/Project Name</Label>
+                        <Label htmlFor="name" className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Client/Project Name</Label>
                         <Input
                             id="name"
                             type="text"
@@ -88,7 +88,7 @@ export default function CreateNodeModal({ onClose, onCreated }) {
                         />
                     </div>
                     <div>
-                        <Label htmlFor="description" className="text-sm font-semibold text-gray-700 mb-2">Description</Label>
+                        <Label htmlFor="description" className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Description</Label>
                         <Textarea
                             id="description"
                             value={description}
@@ -99,7 +99,7 @@ export default function CreateNodeModal({ onClose, onCreated }) {
                         />
                     </div>
                     <div>
-                        <Label htmlFor="url" className="text-sm font-semibold text-gray-700 mb-2">Site URL</Label>
+                        <Label htmlFor="url" className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Site URL</Label>
                         <Input
                             id="url"
                             type="url"

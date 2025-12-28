@@ -58,7 +58,7 @@ export default function JoinNodeModal({ onClose, onJoined }) {
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Join Node</h3>
                 <div className="space-y-5">
                     <div>
-                        <Label htmlFor="code" className="text-sm font-semibold text-gray-700 mb-2">Invite Code</Label>
+                        <Label htmlFor="code" className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Invite Code</Label>
                         <Input
                             id="code"
                             type="text"
