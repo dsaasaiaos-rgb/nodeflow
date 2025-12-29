@@ -12,17 +12,25 @@ Deno.serve(async (req) => {
         const { nodeId } = await req.json();
 
         // Verify user has access to this node
-        const memberships = await base44.entities.NodeMember.filter({ nodeId, userId: user.id });
+        const memberships = await base44.asServiceRole.entities.NodeMember.filter({ nodeId, userId: user.id });
+        const isOwner = memberships.some(m => m.role === 'owner');
+        const isAdmin = user.role === 'admin';
         
-        if (memberships.length === 0 && user.role !== 'admin') {
+        if (memberships.length === 0 && !isAdmin) {
             return Response.json({ error: 'Access denied' }, { status: 403 });
         }
 
         // Fetch messages and docs
-        const messages = await base44.entities.NodeMessage.filter({ nodeId }, '-created_date');
-        const docs = await base44.entities.NodeDoc.filter({ nodeId });
+        const messages = await base44.asServiceRole.entities.NodeMessage.filter({ nodeId }, '-created_date');
+        const docs = await base44.asServiceRole.entities.NodeDoc.filter({ nodeId });
 
-        return Response.json({ messages, docs });
+        // Only fetch invite codes for owners/admins
+        let inviteCodes = [];
+        if (isOwner || isAdmin) {
+            inviteCodes = await base44.asServiceRole.entities.NodeInvite.filter({ nodeId });
+        }
+
+        return Response.json({ messages, docs, isOwner: isOwner || isAdmin, inviteCodes });
     } catch (error) {
         return Response.json({ error: error.message }, { status: 500 });
     }
