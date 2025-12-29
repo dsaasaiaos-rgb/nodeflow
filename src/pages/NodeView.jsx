@@ -250,7 +250,7 @@ Document:\n${content}`;
                                 {editedNode?.status}
                             </span>
                         </div>
-                        <a href={editedNode?.url} target="_blank" rel="noreferrer" className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 mt-1">
+                        <a href={editedNode?.url} target="_blank" rel="noreferrer" className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 mt-3">
                             {editedNode?.url} <ExternalLink className="w-3 h-3" />
                         </a>
                     </div>
