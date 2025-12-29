@@ -64,7 +64,7 @@ export default function Sidebar({ user, nodes, currentNode, currentView, onSelec
                                 onSelectHub();
                                 if (window.innerWidth < 1024) setSidebarOpen(false);
                             }}
-                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl mb-4 transition-all ${
+                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl mb-2 transition-all ${
                                 currentView === 'hub' 
                                     ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-200 dark:shadow-indigo-900/50' 
                                     : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
@@ -72,6 +72,16 @@ export default function Sidebar({ user, nodes, currentNode, currentView, onSelec
                         >
                             <Home className="w-5 h-5" />
                             <span className="font-semibold">{user?.role === 'admin' ? 'Master Hub' : 'My Nodes'}</span>
+                        </button>
+
+                        <button
+                            onClick={() => {
+                                window.location.href = '/MasterHub';
+                            }}
+                            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl mb-4 transition-all text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                        >
+                            <Home className="w-5 h-5" />
+                            <span className="font-semibold">Master Hub (v2)</span>
                         </button>
 
                         <div className="mb-3 mt-6">
