@@ -239,7 +239,7 @@ Document:\n${content}`;
                 {/* Header */}
                 <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center bg-white dark:bg-gray-900 shadow-sm">
                     <div>
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-3 ml-6">
                             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{editedNode?.name}</h1>
                             <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${
                                 editedNode?.status === 'Active' ? 'bg-green-100 text-green-700 border-green-200' : 
