@@ -1,4 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { X } from "lucide-react";
+import { createPageUrl } from "@/utils";
 
 const LS_KEY = "master_hub_db_v1";
 
