@@ -454,34 +454,42 @@ Document:\n${content}`;
                                                  activeTab === 'sow' ? 'Statement of Work' : 'Service Agreement'}
                                             </Label>
                                             <div className="flex gap-2">
-                                                {activeTab !== 'code' && (
-                                                    <Button
-                                                        onClick={() => {
-                                                            const key = activeTab;
-                                                            if (showSummary[key]) {
-                                                                setShowSummary(prev => ({...prev, [key]: false}));
-                                                            } else {
-                                                                handleSummarize(key, docs[key]);
-                                                            }
-                                                        }}
-                                                        disabled={aiLoading}
-                                                        variant="outline"
-                                                        className="text-xs flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-none hover:shadow-lg"
-                                                    >
-                                                        {aiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
-                                                        {showSummary[activeTab] ? 'Hide Summary' : 'Summarize'}
-                                                    </Button>
-                                                )}
-                                                <Button
-                                                    onClick={() => handleAIPolish(activeTab === 'code' ? 'siteCode' : activeTab, docs[activeTab === 'code' ? 'siteCode' : activeTab])}
-                                                    disabled={aiLoading}
-                                                    variant="outline"
-                                                    className="text-xs flex items-center gap-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white border-none hover:shadow-lg"
-                                                >
-                                                    {aiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
-                                                    Polish with AI
-                                                </Button>
-                                            </div>
+                                                          <Button
+                                                              onClick={() => setShowVersionHistory(activeTab === 'code' ? 'siteCode' : activeTab)}
+                                                              variant="outline"
+                                                              className="text-xs flex items-center gap-2"
+                                                          >
+                                                              <History className="w-3 h-3" />
+                                                              History
+                                                          </Button>
+                                                          {activeTab !== 'code' && (
+                                                              <Button
+                                                                  onClick={() => {
+                                                                      const key = activeTab;
+                                                                      if (showSummary[key]) {
+                                                                          setShowSummary(prev => ({...prev, [key]: false}));
+                                                                      } else {
+                                                                          handleSummarize(key, docs[key]);
+                                                                      }
+                                                                  }}
+                                                                  disabled={aiLoading}
+                                                                  variant="outline"
+                                                                  className="text-xs flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-none hover:shadow-lg"
+                                                              >
+                                                                  {aiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+                                                                  {showSummary[activeTab] ? 'Hide Summary' : 'Summarize'}
+                                                              </Button>
+                                                          )}
+                                                          <Button
+                                                              onClick={() => handleAIPolish(activeTab === 'code' ? 'siteCode' : activeTab, docs[activeTab === 'code' ? 'siteCode' : activeTab])}
+                                                              disabled={aiLoading}
+                                                              variant="outline"
+                                                              className="text-xs flex items-center gap-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white border-none hover:shadow-lg"
+                                                          >
+                                                              {aiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+                                                              Polish with AI
+                                                          </Button>
+                                                      </div>
                                         </div>
 
                                         {showSummary[activeTab] && summaries[activeTab] && (
