@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { 
     Save, Settings, Code, FileText, FileCode, AlertCircle, 
-    MessageSquare, Send, Sparkles, Loader2, ExternalLink, Home, Copy, Key, Users
+    MessageSquare, Send, Sparkles, Loader2, ExternalLink, Home, Copy, Key, Users, History
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { createPageUrl } from '@/utils';
