@@ -46,7 +46,7 @@ export default function Sidebar({ user, nodes, currentNode, currentView, onSelec
                 <div className="flex flex-col h-full">
                     {/* Header */}
                     <div className="p-6 border-b border-gray-200 dark:border-gray-800">
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-3 pl-2">
                             <div className="p-2.5 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg">
                                 <Home className="w-6 h-6 text-white" />
                             </div>
