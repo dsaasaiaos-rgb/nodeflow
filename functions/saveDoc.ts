@@ -21,6 +21,17 @@ Deno.serve(async (req) => {
         // Find existing doc
         const existingDocs = await base44.asServiceRole.entities.NodeDoc.filter({ nodeId, key });
         
+        // Save version history before updating
+        if (existingDocs.length > 0 && existingDocs[0].content) {
+            await base44.asServiceRole.entities.DocVersion.create({
+                nodeId,
+                key,
+                content: existingDocs[0].content,
+                savedBy: existingDocs[0].updatedBy || user.id,
+                savedByName: user.full_name || user.email.split('@')[0]
+            });
+        }
+
         let doc;
         if (existingDocs.length > 0) {
             doc = await base44.asServiceRole.entities.NodeDoc.update(existingDocs[0].id, {
