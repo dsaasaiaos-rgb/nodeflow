@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { createPageUrl } from '@/utils';
+import VersionHistoryModal from '@/components/modals/VersionHistoryModal';
 
 export default function NodeViewPage() {
     const [user, setUser] = useState(null);
