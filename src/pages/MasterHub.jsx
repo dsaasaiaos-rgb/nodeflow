@@ -35,7 +35,7 @@ const statusLabel = (s) => {
 const statusDotClass = (s) => {
   switch (s) {
     case "ACTIVE":
-      return "bg-emerald-500";
+      return "bg-green-500";
     case "NEEDS_REVIEW":
       return "bg-yellow-500";
     case "ON_HOLD":
