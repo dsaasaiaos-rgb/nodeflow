@@ -587,6 +587,18 @@ Document:\n${content}`;
                     </div>
                 </div>
             </div>
+
+            {showVersionHistory && (
+                <VersionHistoryModal
+                    nodeId={node.id}
+                    docKey={showVersionHistory}
+                    currentContent={docs[showVersionHistory] || ''}
+                    onClose={() => setShowVersionHistory(null)}
+                    onRevert={async (content) => {
+                        await handleSaveDoc(showVersionHistory, content);
+                    }}
+                />
+            )}
         </div>
     );
 }
