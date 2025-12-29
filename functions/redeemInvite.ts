@@ -16,7 +16,7 @@ Deno.serve(async (req) => {
         }
 
         // Find valid invite
-        const invites = await base44.entities.NodeInvite.filter({ codeHash: code.toUpperCase() });
+        const invites = await base44.asServiceRole.entities.NodeInvite.filter({ codeHash: code.toUpperCase() });
         const invite = invites.find(i => i.usesLeft > 0);
 
         if (!invite) {
@@ -24,13 +24,13 @@ Deno.serve(async (req) => {
         }
 
         // Check if already a member
-        const existing = await base44.entities.NodeMember.filter({ 
+        const existing = await base44.asServiceRole.entities.NodeMember.filter({ 
             nodeId: invite.nodeId, 
             userId: user.id 
         });
 
         if (existing.length === 0) {
-            await base44.entities.NodeMember.create({
+            await base44.asServiceRole.entities.NodeMember.create({
                 nodeId: invite.nodeId,
                 userId: user.id,
                 role: invite.roleToGrant
@@ -38,7 +38,7 @@ Deno.serve(async (req) => {
         }
 
         // Decrement uses
-        await base44.entities.NodeInvite.update(invite.id, {
+        await base44.asServiceRole.entities.NodeInvite.update(invite.id, {
             usesLeft: invite.usesLeft - 1
         });
 
