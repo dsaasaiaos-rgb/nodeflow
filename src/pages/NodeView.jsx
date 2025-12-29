@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { 
     Save, Settings, Code, FileText, FileCode, AlertCircle, 
-    MessageSquare, Send, Sparkles, Loader2, ExternalLink, Home
+    MessageSquare, Send, Sparkles, Loader2, ExternalLink, Home, Copy, Key, Users
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { createPageUrl } from '@/utils';
@@ -27,6 +27,10 @@ export default function NodeViewPage() {
     const [aiLoading, setAiLoading] = useState(false);
     const [summaries, setSummaries] = useState({});
     const [showSummary, setShowSummary] = useState({});
+    const [inviteCodes, setInviteCodes] = useState([]);
+    const [isOwner, setIsOwner] = useState(false);
+    const [showInviteModal, setShowInviteModal] = useState(false);
+    const [creatingInvite, setCreatingInvite] = useState(false);
     const messagesEndRef = useRef(null);
 
     useEffect(() => {
@@ -64,6 +68,10 @@ export default function NodeViewPage() {
                 setMessages(data.messages);
                 const docsMap = data.docs.reduce((acc, doc) => ({ ...acc, [doc.key]: doc.content }), {});
                 setDocs(docsMap);
+                setIsOwner(data.isOwner);
+                if (data.inviteCodes) {
+                    setInviteCodes(data.inviteCodes);
+                }
             }
         } catch (e) {
             console.error(e);
@@ -190,6 +198,25 @@ Document:\n${content}`;
 
     const handleHubClick = () => {
         window.location.href = createPageUrl('Hub');
+    };
+
+    const handleCreateInvite = async (roleToGrant) => {
+        setCreatingInvite(true);
+        try {
+            const { data: { code } } = await base44.functions.invoke('createInvite', {
+                nodeId: node.id,
+                roleToGrant
+            });
+            setInviteCodes(prev => [...prev, { codeHash: code, roleToGrant, usesLeft: 1 }]);
+        } catch (e) {
+            alert("Failed to create invite: " + e.message);
+        } finally {
+            setCreatingInvite(false);
+        }
+    };
+
+    const copyToClipboard = (text) => {
+        navigator.clipboard.writeText(text);
     };
 
     const hasChanges = JSON.stringify(node) !== JSON.stringify(editedNode);
@@ -351,6 +378,68 @@ Document:\n${content}`;
                                                 </div>
                                             </div>
                                         </div>
+
+                                        {isOwner && (
+                                            <div className="pt-6 border-t border-gray-100 dark:border-gray-700">
+                                                <div className="flex items-center justify-between mb-4">
+                                                    <h3 className="text-sm font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                                                        <Key className="w-4 h-4" />
+                                                        Invite Codes
+                                                    </h3>
+                                                    <div className="flex gap-2">
+                                                        <Button
+                                                            onClick={() => handleCreateInvite('client')}
+                                                            disabled={creatingInvite}
+                                                            size="sm"
+                                                            className="bg-indigo-600 hover:bg-indigo-700 text-xs"
+                                                        >
+                                                            {creatingInvite ? <Loader2 className="w-3 h-3 animate-spin" /> : <Users className="w-3 h-3 mr-1" />}
+                                                            New Client Code
+                                                        </Button>
+                                                        <Button
+                                                            onClick={() => handleCreateInvite('member')}
+                                                            disabled={creatingInvite}
+                                                            size="sm"
+                                                            variant="outline"
+                                                            className="text-xs"
+                                                        >
+                                                            New Member Code
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                                {inviteCodes.length === 0 ? (
+                                                    <p className="text-sm text-gray-500 dark:text-gray-400">No invite codes yet. Create one to share access.</p>
+                                                ) : (
+                                                    <div className="space-y-2">
+                                                        {inviteCodes.map((invite, idx) => (
+                                                            <div key={idx} className="flex items-center justify-between p-3 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 rounded-xl border border-indigo-100 dark:border-indigo-800">
+                                                                <div>
+                                                                    <span className="font-mono font-bold text-indigo-600 dark:text-indigo-400 tracking-wider">{invite.codeHash}</span>
+                                                                    <span className={`ml-3 px-2 py-0.5 rounded-full text-xs font-medium ${
+                                                                        invite.roleToGrant === 'client' 
+                                                                            ? 'bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-400' 
+                                                                            : 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-400'
+                                                                    }`}>
+                                                                        {invite.roleToGrant}
+                                                                    </span>
+                                                                    <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">
+                                                                        ({invite.usesLeft} uses left)
+                                                                    </span>
+                                                                </div>
+                                                                <Button
+                                                                    onClick={() => copyToClipboard(invite.codeHash)}
+                                                                    size="sm"
+                                                                    variant="ghost"
+                                                                    className="text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/50"
+                                                                >
+                                                                    <Copy className="w-4 h-4" />
+                                                                </Button>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
                                     </div>
                                 )}
 
@@ -412,8 +501,8 @@ Document:\n${content}`;
                                                 activeTab === 'code' 
                                                     ? 'bg-slate-900 text-slate-50 font-mono text-sm' 
                                                     : activeTab === 'oosw' 
-                                                        ? 'bg-yellow-50 border-yellow-200' 
-                                                        : 'bg-white'
+                                                        ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800 dark:text-yellow-100' 
+                                                        : 'bg-gray-900 text-gray-100 dark:bg-gray-950 dark:text-gray-100'
                                             }`}
                                             placeholder={activeTab === 'code' ? "// Technical notes..." : "Enter details here..."}
                                         />
