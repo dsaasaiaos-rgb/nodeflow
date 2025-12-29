@@ -37,7 +37,7 @@ const statusDotClass = (s) => {
     case "ACTIVE":
       return "bg-emerald-500";
     case "NEEDS_REVIEW":
-      return "bg-amber-500";
+      return "bg-yellow-500";
     case "ON_HOLD":
       return "bg-slate-400";
     case "ARCHIVED":
@@ -719,7 +719,7 @@ export default function MasterHubDashboard() {
                         : saveState === "DIRTY"
                         ? "bg-emerald-600 text-white hover:bg-emerald-700"
                         : saveState === "SAVING"
-                        ? "bg-amber-600 text-white"
+                        ? "bg-yellow-600 text-white"
                         : saveState === "SAVED"
                         ? "bg-emerald-700 text-white"
                         : "bg-gray-200 text-gray-500 dark:bg-gray-900 dark:text-gray-500",
