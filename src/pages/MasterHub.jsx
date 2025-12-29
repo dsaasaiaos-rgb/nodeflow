@@ -504,6 +504,15 @@ export default function MasterHubDashboard() {
     <div className="min-h-screen bg-zinc-50 text-zinc-900 dark:bg-black dark:text-zinc-50">
       <div className="mx-auto max-w-6xl px-4 py-8">
         {/* Top Bar */}
+        <div className="mb-6">
+          <button 
+            onClick={() => window.location.href = '/'}
+            className="inline-flex items-center gap-1 rounded-lg bg-white px-3 py-1.5 text-sm font-medium text-zinc-600 shadow-sm ring-1 ring-zinc-200 hover:bg-zinc-50 hover:text-zinc-900 dark:bg-zinc-900 dark:text-zinc-400 dark:ring-zinc-800 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
+          >
+            ← Back to Main Hub
+          </button>
+        </div>
+
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
             <div className="text-sm font-semibold text-zinc-500 dark:text-zinc-400">Master Hub</div>
