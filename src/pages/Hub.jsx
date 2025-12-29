@@ -5,8 +5,9 @@ import CreateNodeModal from '@/components/modals/CreateNodeModal';
 import JoinNodeModal from '@/components/modals/JoinNodeModal';
 import { Button } from "@/components/ui/button";
 import { Plus, Key, ExternalLink, Home, Users, Clock, Loader2 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { createPageUrl } from '@/utils';
+import NodeContent from '@/components/NodeContent';
 
 export default function HubPage() {
     const [user, setUser] = useState(null);
@@ -15,6 +16,7 @@ export default function HubPage() {
     const [showJoin, setShowJoin] = useState(false);
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
+    const [selectedNodeId, setSelectedNodeId] = useState(null);
 
     useEffect(() => {
         loadData();
@@ -41,8 +43,14 @@ export default function HubPage() {
     };
 
     const handleNodeClick = (node) => {
-        window.location.href = createPageUrl('NodeView') + '?nodeId=' + node.id;
+        setSelectedNodeId(node.id);
     };
+
+    const handleNodeUpdate = (updatedNode) => {
+        setNodes(prev => prev.map(n => n.id === updatedNode.id ? updatedNode : n));
+    };
+
+    const selectedNode = nodes.find(n => n.id === selectedNodeId);
 
     if (isLoading) {
         return (
@@ -58,8 +66,8 @@ export default function HubPage() {
                 user={user}
                 nodes={nodes}
                 currentView="hub"
-                currentNode={null}
-                onSelectHub={() => {}}
+                currentNode={selectedNode}
+                onSelectHub={() => setSelectedNodeId(null)}
                 onSelectNode={handleNodeClick}
                 sidebarOpen={sidebarOpen}
                 setSidebarOpen={setSidebarOpen}
@@ -202,6 +210,35 @@ export default function HubPage() {
                     </motion.div>
                 </div>
             </div>
+
+            {/* Node Content Modal */}
+            <AnimatePresence>
+                {selectedNodeId && selectedNode && (
+                    <div className="fixed inset-0 z-50">
+                        <motion.div 
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+                            onClick={() => setSelectedNodeId(null)}
+                        />
+                        <motion.div 
+                            initial={{ y: '100%' }}
+                            animate={{ y: 0 }}
+                            exit={{ y: '100%' }}
+                            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                            className="absolute inset-x-0 bottom-0 h-[92vh] bg-white dark:bg-gray-900 rounded-t-3xl shadow-2xl overflow-hidden md:inset-y-10 md:inset-x-10 md:h-auto md:rounded-3xl border border-gray-200 dark:border-gray-800"
+                        >
+                            <NodeContent 
+                                user={user}
+                                node={selectedNode}
+                                onClose={() => setSelectedNodeId(null)}
+                                onUpdate={handleNodeUpdate}
+                            />
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
 
             {showCreate && <CreateNodeModal onClose={() => setShowCreate(false)} onCreated={loadData} />}
             {showJoin && <JoinNodeModal onClose={() => setShowJoin(false)} onJoined={loadData} />}
