@@ -12,23 +12,23 @@ Deno.serve(async (req) => {
         const { nodeId, key, content } = await req.json();
 
         // Verify access
-        const memberships = await base44.entities.NodeMember.filter({ nodeId, userId: user.id });
+        const memberships = await base44.asServiceRole.entities.NodeMember.filter({ nodeId, userId: user.id });
         
         if (memberships.length === 0 && user.role !== 'admin') {
             return Response.json({ error: 'Access denied' }, { status: 403 });
         }
 
         // Find existing doc
-        const existingDocs = await base44.entities.NodeDoc.filter({ nodeId, key });
+        const existingDocs = await base44.asServiceRole.entities.NodeDoc.filter({ nodeId, key });
         
         let doc;
         if (existingDocs.length > 0) {
-            doc = await base44.entities.NodeDoc.update(existingDocs[0].id, {
+            doc = await base44.asServiceRole.entities.NodeDoc.update(existingDocs[0].id, {
                 content,
                 updatedBy: user.id
             });
         } else {
-            doc = await base44.entities.NodeDoc.create({
+            doc = await base44.asServiceRole.entities.NodeDoc.create({
                 nodeId,
                 key,
                 content,

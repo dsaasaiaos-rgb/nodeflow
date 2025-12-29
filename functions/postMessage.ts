@@ -12,13 +12,13 @@ Deno.serve(async (req) => {
         const { nodeId, content } = await req.json();
 
         // Verify access
-        const memberships = await base44.entities.NodeMember.filter({ nodeId, userId: user.id });
+        const memberships = await base44.asServiceRole.entities.NodeMember.filter({ nodeId, userId: user.id });
         
         if (memberships.length === 0 && user.role !== 'admin') {
             return Response.json({ error: 'Access denied' }, { status: 403 });
         }
 
-        const message = await base44.entities.NodeMessage.create({
+        const message = await base44.asServiceRole.entities.NodeMessage.create({
             nodeId,
             userId: user.id,
             userName: user.full_name || user.email.split('@')[0],

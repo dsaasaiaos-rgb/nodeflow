@@ -16,7 +16,7 @@ Deno.serve(async (req) => {
         }
 
         // Create the node
-        const node = await base44.entities.Node.create({
+        const node = await base44.asServiceRole.entities.Node.create({
             name,
             description,
             url,
@@ -25,7 +25,7 @@ Deno.serve(async (req) => {
         });
 
         // Create owner membership
-        await base44.entities.NodeMember.create({
+        await base44.asServiceRole.entities.NodeMember.create({
             nodeId: node.id,
             userId: user.id,
             role: 'owner'
