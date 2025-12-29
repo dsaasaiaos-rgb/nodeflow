@@ -208,7 +208,7 @@ function PanelCloseButton({
       className="inline-flex items-center justify-center rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm font-medium text-zinc-700 shadow-sm hover:bg-zinc-50 active:scale-[0.99] dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-200 dark:hover:bg-zinc-900"
     >
       <span className="mr-2 inline-flex h-5 w-5 items-center justify-center rounded-lg border border-zinc-200 bg-zinc-50 text-[12px] leading-none dark:border-zinc-800 dark:bg-zinc-900">
-        ✕
+        <X className="w-3 h-3" />
       </span>
       {label}
     </button>
