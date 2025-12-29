@@ -316,6 +316,23 @@ Document:\n${content}`;
                                                 <option>Completed</option>
                                             </select>
                                         </div>
+                                        <div className="col-span-1 md:col-span-2 pt-2">
+                                            <Label className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 block">Live Preview</Label>
+                                            <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden bg-gray-100 dark:bg-gray-800 h-96 relative">
+                                                {editedNode.url ? (
+                                                    <iframe 
+                                                        src={editedNode.url.startsWith('http') ? editedNode.url : `https://${editedNode.url}`} 
+                                                        className="w-full h-full border-0"
+                                                        title="Site Preview"
+                                                        sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+                                                    />
+                                                ) : (
+                                                    <div className="flex items-center justify-center h-full text-gray-400 text-sm">
+                                                        Enter a Site URL to see a preview
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
                                     </div>
                                     
                                     <div className="pt-6 border-t border-gray-100 dark:border-gray-700">
