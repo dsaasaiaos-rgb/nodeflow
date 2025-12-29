@@ -32,6 +32,7 @@ export default function NodeViewPage() {
     const [isOwner, setIsOwner] = useState(false);
     const [showInviteModal, setShowInviteModal] = useState(false);
     const [creatingInvite, setCreatingInvite] = useState(false);
+    const [showVersionHistory, setShowVersionHistory] = useState(null);
     const messagesEndRef = useRef(null);
 
     useEffect(() => {
