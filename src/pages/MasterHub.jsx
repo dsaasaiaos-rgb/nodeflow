@@ -508,7 +508,7 @@ export default function MasterHubDashboard() {
         {/* Top Bar */}
         <div className="mb-6">
           <button 
-            onClick={() => window.location.href = '/'}
+            onClick={() => window.location.href = createPageUrl('Hub')}
             className="inline-flex items-center gap-1 rounded-lg bg-white px-3 py-1.5 text-sm font-medium text-zinc-600 shadow-sm ring-1 ring-zinc-200 hover:bg-zinc-50 hover:text-zinc-900 dark:bg-zinc-900 dark:text-zinc-400 dark:ring-zinc-800 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
           >
             ← Back to Main Hub
