@@ -62,8 +62,10 @@ export default function NodeContent({ user, node, onClose, onUpdate }) {
     const handleSaveNode = async () => {
         setIsSaving(true);
         try {
-            await base44.functions.invoke('updateNode', { nodeId: node.id, updates: editedNode });
-            if (onUpdate) onUpdate(editedNode);
+            const { data } = await base44.functions.invoke('updateNode', { nodeId: node.id, updates: editedNode });
+            if (data.error) throw new Error(data.error);
+            setEditedNode(data.node);
+            if (onUpdate) onUpdate(data.node);
         } catch (e) {
             alert("Error saving: " + e.message);
         } finally {
