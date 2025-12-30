@@ -32,6 +32,9 @@ export default function NodeContent({ user, node, onClose, onUpdate }) {
     // Update local state when prop node changes
     useEffect(() => {
         setEditedNode(node);
+    }, [node]);
+
+    useEffect(() => {
         loadData();
     }, [node.id]);
 
@@ -45,6 +48,10 @@ export default function NodeContent({ user, node, onClose, onUpdate }) {
         setIsLoading(true);
         try {
             const { data } = await base44.functions.invoke('getNodeData', { nodeId: node.id });
+            if (data.node) {
+                setEditedNode(data.node);
+                if (onUpdate) onUpdate(data.node);
+            }
             setMessages(data.messages);
             const docsMap = data.docs.reduce((acc, doc) => ({ ...acc, [doc.key]: doc.content }), {});
             setDocs(docsMap);
@@ -319,14 +326,30 @@ Document:\n${content}`;
                                         </div>
                                         <div className="col-span-1 md:col-span-2 pt-2">
                                             <Label className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 block">Live Preview</Label>
-                                            <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden bg-gray-100 dark:bg-gray-800 h-96 relative">
+                                            <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden bg-gray-100 dark:bg-gray-800 h-96 relative group">
                                                 {editedNode.url ? (
-                                                    <iframe 
-                                                        src={editedNode.url.startsWith('http') ? editedNode.url : `https://${editedNode.url}`} 
-                                                        className="w-full h-full border-0"
-                                                        title="Site Preview"
-                                                        sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
-                                                    />
+                                                    <>
+                                                        <iframe 
+                                                            src={editedNode.url.startsWith('http') ? editedNode.url : `https://${editedNode.url}`} 
+                                                            className="w-full h-full border-0 bg-white"
+                                                            title="Site Preview"
+                                                            sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+                                                        />
+                                                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+                                                            <a 
+                                                                href={editedNode.url.startsWith('http') ? editedNode.url : `https://${editedNode.url}`}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="bg-white text-black px-4 py-2 rounded-full font-bold shadow-lg pointer-events-auto hover:bg-gray-100 transition-colors flex items-center gap-2"
+                                                            >
+                                                                <ExternalLink className="w-4 h-4" />
+                                                                Open Website
+                                                            </a>
+                                                        </div>
+                                                        <div className="absolute bottom-2 right-2 bg-black/70 text-white text-[10px] px-2 py-1 rounded pointer-events-none">
+                                                            If preview is blank, site may block embedding
+                                                        </div>
+                                                    </>
                                                 ) : (
                                                     <div className="flex items-center justify-center h-full text-gray-400 text-sm">
                                                         Enter a Site URL to see a preview

@@ -20,7 +20,8 @@ Deno.serve(async (req) => {
             return Response.json({ error: 'Access denied' }, { status: 403 });
         }
 
-        // Fetch messages and docs
+        // Fetch node details, messages and docs
+        const node = await base44.asServiceRole.entities.Node.get(nodeId);
         const messages = await base44.asServiceRole.entities.NodeMessage.filter({ nodeId }, '-created_date');
         const docs = await base44.asServiceRole.entities.NodeDoc.filter({ nodeId });
 
@@ -30,7 +31,7 @@ Deno.serve(async (req) => {
             inviteCodes = await base44.asServiceRole.entities.NodeInvite.filter({ nodeId });
         }
 
-        return Response.json({ messages, docs, isOwner: isOwner || isAdmin, inviteCodes });
+        return Response.json({ node, messages, docs, isOwner: isOwner || isAdmin, inviteCodes });
     } catch (error) {
         return Response.json({ error: error.message }, { status: 500 });
     }
