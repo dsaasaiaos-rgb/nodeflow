@@ -67,7 +67,8 @@ export default function NodeContent({ user, node, onClose, onUpdate }) {
             setEditedNode(data.node);
             if (onUpdate) onUpdate(data.node);
         } catch (e) {
-            alert("Error saving: " + e.message);
+            console.error("Save error:", e);
+            alert("Error saving: " + (e.message || "Unknown error occurred"));
         } finally {
             setIsSaving(false);
         }
