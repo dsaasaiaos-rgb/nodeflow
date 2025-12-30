@@ -11,32 +11,30 @@ Deno.serve(async (req) => {
         }
 
         const { name, description, url } = await req.json();
-        console.log(`Creating node for user ${user.id}: ${name}`);
+        console.log(`Creating node: ${name} for ${user.email}`);
 
         if (!name || !description || !url) {
             return Response.json({ error: 'Missing required fields' }, { status: 400 });
         }
 
-        // Create the node using user-scoped client
-        // This relies on RLS allowing creation (which it does: "user.id": {"$exists": true})
-        const node = await base44.entities.Node.create({
+        // Create the node
+        // Use asServiceRole to ensure we have permission, and RLS now allows admin/creator
+        const node = await base44.asServiceRole.entities.Node.create({
             name,
             description,
             url,
             status: 'Active',
             ownerUserId: user.id
         });
-
+        
         console.log(`Node created: ${node.id}`);
 
         // Create owner membership
-        // This relies on RLS allowing creation for self
-        await base44.entities.NodeMember.create({
+        await base44.asServiceRole.entities.NodeMember.create({
             nodeId: node.id,
             userId: user.id,
             role: 'owner'
         });
-        
         console.log(`NodeMember created for node ${node.id}`);
 
         return Response.json({ node });
