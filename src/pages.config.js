@@ -1,12 +1,14 @@
 import Hub from './pages/Hub';
-import NodeView from './pages/NodeView';
 import MasterHub from './pages/MasterHub';
+import NodeView from './pages/NodeView';
+import Messages from './pages/Messages';
 
 
 export const PAGES = {
     "Hub": Hub,
-    "NodeView": NodeView,
     "MasterHub": MasterHub,
+    "NodeView": NodeView,
+    "Messages": Messages,
 }
 
 export const pagesConfig = {
