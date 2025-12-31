@@ -4,7 +4,7 @@ import Sidebar from '@/components/Sidebar';
 import CreateNodeModal from '@/components/modals/CreateNodeModal';
 import JoinNodeModal from '@/components/modals/JoinNodeModal';
 import { Button } from "@/components/ui/button";
-import { Plus, Key, ExternalLink, Home, Users, Clock, Loader2 } from 'lucide-react';
+import { Plus, Key, ExternalLink, Home, Users, Clock, Loader2, Search, Filter, ArrowUpDown, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createPageUrl } from '@/utils';
 import NodeContent from '@/components/NodeContent';
@@ -17,6 +17,11 @@ export default function HubPage() {
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedNodeId, setSelectedNodeId] = useState(null);
+    
+    // Filter & Sort State
+    const [searchTerm, setSearchTerm] = useState('');
+    const [statusFilter, setStatusFilter] = useState('All');
+    const [sortOrder, setSortOrder] = useState('newest');
 
     useEffect(() => {
         loadData();
@@ -51,6 +56,26 @@ export default function HubPage() {
     };
 
     const selectedNode = nodes.find(n => n.id === selectedNodeId);
+
+    const filteredNodes = nodes.filter(node => {
+        const matchesSearch = node.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                              node.url?.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesStatus = statusFilter === 'All' || node.status === statusFilter;
+        return matchesSearch && matchesStatus;
+    }).sort((a, b) => {
+        if (sortOrder === 'newest') return new Date(b.created_date) - new Date(a.created_date);
+        if (sortOrder === 'oldest') return new Date(a.created_date) - new Date(b.created_date);
+        if (sortOrder === 'a-z') return a.name.localeCompare(b.name);
+        if (sortOrder === 'z-a') return b.name.localeCompare(a.name);
+        return 0;
+    });
+
+    const statusColors = {
+        'Active': 'bg-green-500',
+        'In Progress': 'bg-indigo-500',
+        'On Hold': 'bg-yellow-500',
+        'Completed': 'bg-blue-500',
+    };
 
     if (isLoading) {
         return (
@@ -146,25 +171,79 @@ export default function HubPage() {
                         transition={{ delay: 0.5 }}
                         className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
                     >
-                        <div className="p-6 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-gray-50 to-white dark:from-gray-800 dark:to-gray-800">
-                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Recent Nodes</h2>
+                        <div className="p-6 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-gray-50 to-white dark:from-gray-800 dark:to-gray-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Nodes</h2>
+                            
+                            <div className="flex flex-col md:flex-row gap-3">
+                                <div className="relative">
+                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                    <input
+                                        type="text"
+                                        placeholder="Search nodes..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        className="pl-9 pr-4 py-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none w-full md:w-64"
+                                    />
+                                    {searchTerm && (
+                                        <button 
+                                            onClick={() => setSearchTerm('')}
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                        >
+                                            <X className="w-3 h-3" />
+                                        </button>
+                                    )}
+                                </div>
+                                
+                                <div className="flex gap-2">
+                                    <div className="relative">
+                                        <select
+                                            value={statusFilter}
+                                            onChange={(e) => setStatusFilter(e.target.value)}
+                                            className="appearance-none pl-9 pr-8 py-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none cursor-pointer"
+                                        >
+                                            <option value="All">All Status</option>
+                                            <option value="Active">Active</option>
+                                            <option value="In Progress">In Progress</option>
+                                            <option value="On Hold">On Hold</option>
+                                            <option value="Completed">Completed</option>
+                                        </select>
+                                        <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                                    </div>
+
+                                    <div className="relative">
+                                        <select
+                                            value={sortOrder}
+                                            onChange={(e) => setSortOrder(e.target.value)}
+                                            className="appearance-none pl-9 pr-8 py-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none cursor-pointer"
+                                        >
+                                            <option value="newest">Newest</option>
+                                            <option value="oldest">Oldest</option>
+                                            <option value="a-z">Name (A-Z)</option>
+                                            <option value="z-a">Name (Z-A)</option>
+                                        </select>
+                                        <ArrowUpDown className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div className="divide-y divide-gray-100 dark:divide-gray-700">
-                            {nodes.length === 0 ? (
+                            {filteredNodes.length === 0 ? (
                                 <div className="p-16 text-center text-gray-500 dark:text-gray-400">
                                     <div className="mx-auto w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
                                         <Home className="w-10 h-10 text-gray-400 dark:text-gray-500" />
                                     </div>
-                                    <p className="text-xl font-semibold mb-2">No nodes yet</p>
-                                    <p className="text-sm">Create or join a node to get started!</p>
+                                    <p className="text-xl font-semibold mb-2">
+                                        {nodes.length === 0 ? "No nodes yet" : "No nodes match your search"}
+                                    </p>
+                                    {nodes.length === 0 && <p className="text-sm">Create or join a node to get started!</p>}
                                 </div>
                             ) : (
-                                nodes.map((node, index) => (
+                                filteredNodes.map((node, index) => (
                                     <motion.div
                                         key={node.id}
                                         initial={{ opacity: 0, x: -20 }}
                                         animate={{ opacity: 1, x: 0 }}
-                                        transition={{ delay: 0.6 + index * 0.1 }}
+                                        transition={{ delay: 0.1 * index }}
                                         onClick={() => handleNodeClick(node)}
                                         className="p-6 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 dark:hover:from-indigo-900/20 dark:hover:to-purple-900/20 cursor-pointer transition-all group"
                                     >
@@ -172,9 +251,7 @@ export default function HubPage() {
                                             <div className="flex-1">
                                                 <div className="flex items-center gap-3 mb-2">
                                                     <h3 className="font-bold text-gray-900 dark:text-white text-xl group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">{node.name}</h3>
-                                                    {node.status === 'Active' && (
-                                                        <div className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse" />
-                                                    )}
+                                                    <div className={`w-2.5 h-2.5 rounded-full ${statusColors[node.status] || 'bg-gray-400'} ${node.status === 'Active' ? 'animate-pulse' : ''}`} title={node.status} />
                                                 </div>
                                                 <p className="text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">{node.description}</p>
                                                 <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
