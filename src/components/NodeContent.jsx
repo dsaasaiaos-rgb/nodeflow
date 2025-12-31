@@ -6,12 +6,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { 
     Save, Settings, Code, FileText, FileCode, AlertCircle, 
-    MessageSquare, Send, Sparkles, Loader2, ExternalLink, Home, Copy, Key, Users, History, X
+    MessageSquare, Send, Sparkles, Loader2, ExternalLink, Home, Copy, Key, Users, History, X, Trash2
 } from 'lucide-react';
 import { createPageUrl } from '@/utils';
 import VersionHistoryModal from '@/components/modals/VersionHistoryModal';
 
-export default function NodeContent({ user, node, onClose, onUpdate }) {
+export default function NodeContent({ user, node, onClose, onUpdate, onDelete }) {
     // Local state for the node content
     const [editedNode, setEditedNode] = useState(node);
     const [messages, setMessages] = useState([]);
@@ -76,6 +76,21 @@ export default function NodeContent({ user, node, onClose, onUpdate }) {
         } catch (e) {
             console.error("Save error:", e);
             alert("Error saving: " + (e.message || "Unknown error occurred"));
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    const handleDeleteNode = async () => {
+        if (!confirm("Are you sure you want to delete this node? This action cannot be undone and will remove all associated data.")) return;
+        
+        setIsSaving(true);
+        try {
+            const { data } = await base44.functions.invoke('deleteNode', { nodeId: node.id });
+            if (data.error) throw new Error(data.error);
+            if (onDelete) onDelete();
+        } catch (e) {
+            alert("Error deleting node: " + e.message);
         } finally {
             setIsSaving(false);
         }
@@ -242,18 +257,32 @@ Document:\n${content}`;
                         {editedNode?.url} <ExternalLink className="w-3 h-3" />
                     </a>
                 </div>
-                <Button
-                    onClick={handleSaveNode}
-                    disabled={!hasChanges || isSaving}
-                    className={`${
-                        hasChanges && !isSaving
-                            ? 'bg-indigo-600 hover:bg-indigo-700 shadow-lg' 
-                            : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                    } transition-all`}
-                >
-                    {isSaving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
-                    Save Changes
-                </Button>
+                <div className="flex items-center gap-2">
+                    {isOwner && (
+                        <Button
+                            onClick={handleDeleteNode}
+                            disabled={isSaving}
+                            variant="destructive"
+                            size="icon"
+                            className="bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/40 border border-red-200 dark:border-red-800"
+                            title="Delete Node"
+                        >
+                            <Trash2 className="w-4 h-4" />
+                        </Button>
+                    )}
+                    <Button
+                        onClick={handleSaveNode}
+                        disabled={!hasChanges || isSaving}
+                        className={`${
+                            hasChanges && !isSaving
+                                ? 'bg-indigo-600 hover:bg-indigo-700 shadow-lg' 
+                                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                        } transition-all`}
+                    >
+                        {isSaving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
+                        Save Changes
+                    </Button>
+                </div>
             </div>
 
             <div className="flex-1 overflow-hidden flex">

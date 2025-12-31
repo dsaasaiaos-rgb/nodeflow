@@ -311,6 +311,10 @@ export default function HubPage() {
                                 node={selectedNode}
                                 onClose={() => setSelectedNodeId(null)}
                                 onUpdate={handleNodeUpdate}
+                                onDelete={() => {
+                                    setSelectedNodeId(null);
+                                    loadData();
+                                }}
                             />
                         </motion.div>
                     </div>
