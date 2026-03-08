@@ -89,7 +89,7 @@ Keep the original intent intact.\n\nOriginal:\n${localContent}`,
                         <History className="w-3 h-3" /> History
                     </Button>
                     {/* Suggest Clause */}
-                    <div className="relative">
+                    {!readOnly && <div className="relative">
                         <Button
                             onClick={() => setShowSuggestions(s => !s)}
                             variant="outline" size="sm"
