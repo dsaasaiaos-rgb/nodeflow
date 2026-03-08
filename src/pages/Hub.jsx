@@ -69,11 +69,6 @@ export default function HubPage() {
         });
     };
 
-    const handleSelectAll = (checked) => {
-        if (checked) setCheckedIds(new Set(pagedNodes.map(n => n.id)));
-        else setCheckedIds(new Set());
-    };
-
     const handleBulkDelete = async () => {
         if (!checkedIds.size) return;
         if (!confirm(`Delete ${checkedIds.size} node(s)? This cannot be undone.`)) return;
@@ -105,6 +100,11 @@ export default function HubPage() {
     const safePage = Math.min(currentPage, totalPages);
     const pagedNodes = filteredNodes.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
     const allPageChecked = pagedNodes.length > 0 && pagedNodes.every(n => checkedIds.has(n.id));
+
+    const handleSelectAll = (checked) => {
+        if (checked) setCheckedIds(new Set(pagedNodes.map(n => n.id)));
+        else setCheckedIds(new Set());
+    };
 
     if (isLoading) {
         return (
