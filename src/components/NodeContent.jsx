@@ -6,11 +6,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { 
     Save, Settings, Code, FileText, FileCode, AlertCircle, 
-    MessageSquare, Send, Sparkles, Loader2, ExternalLink, Home, Copy, Key, Users, History, X, Trash2
+    MessageSquare, Send, Sparkles, Loader2, ExternalLink, Copy, Key, Users, X, Trash2, ShieldCheck
 } from 'lucide-react';
 import { createPageUrl } from '@/utils';
 import VersionHistoryModal from '@/components/modals/VersionHistoryModal';
 import DocEditor from '@/components/NodeContent/DocEditor';
+import MembersPanel from '@/components/NodeContent/MembersPanel';
 
 export default function NodeContent({ user, node, onClose, onUpdate, onDelete }) {
     // Local state for the node content
