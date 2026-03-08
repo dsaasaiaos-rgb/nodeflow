@@ -414,65 +414,12 @@ Document:\n${content}`;
                                         </div>
                                     </div>
 
-                                    {isOwner && (
-                                        <div className="pt-6 border-t border-gray-100 dark:border-gray-700">
-                                            <div className="flex items-center justify-between mb-4">
-                                                <h3 className="text-sm font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                                                    <Key className="w-4 h-4" />
-                                                    Invite Codes
-                                                </h3>
-                                                <div className="flex gap-2">
-                                                    <Button
-                                                        onClick={() => handleCreateInvite('client')}
-                                                        disabled={creatingInvite}
-                                                        size="sm"
-                                                        className="bg-indigo-600 hover:bg-indigo-700 text-xs"
-                                                    >
-                                                        {creatingInvite ? <Loader2 className="w-3 h-3 animate-spin" /> : <Users className="w-3 h-3 mr-1" />}
-                                                        New Client Code
-                                                    </Button>
-                                                    <Button
-                                                        onClick={() => handleCreateInvite('member')}
-                                                        disabled={creatingInvite}
-                                                        size="sm"
-                                                        variant="outline"
-                                                        className="text-xs"
-                                                    >
-                                                        New Member Code
-                                                    </Button>
-                                                </div>
-                                            </div>
-                                            {inviteCodes.length === 0 ? (
-                                                <p className="text-sm text-gray-500 dark:text-gray-400">No invite codes yet. Create one to share access.</p>
-                                            ) : (
-                                                <div className="space-y-2">
-                                                    {inviteCodes.map((invite, idx) => (
-                                                        <div key={idx} className="flex items-center justify-between p-3 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 rounded-xl border border-indigo-100 dark:border-indigo-800">
-                                                            <div>
-                                                                <span className="font-mono font-bold text-indigo-600 dark:text-indigo-400 tracking-wider">{invite.codeHash}</span>
-                                                                <span className={`ml-3 px-2 py-0.5 rounded-full text-xs font-medium ${
-                                                                    invite.roleToGrant === 'client' 
-                                                                        ? 'bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-400' 
-                                                                        : 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-400'
-                                                                }`}>
-                                                                    {invite.roleToGrant}
-                                                                </span>
-                                                                <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">
-                                                                    ({invite.usesLeft} uses left)
-                                                                </span>
-                                                            </div>
-                                                            <Button
-                                                                onClick={() => copyToClipboard(invite.codeHash)}
-                                                                size="sm"
-                                                                variant="ghost"
-                                                                className="text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/50"
-                                                            >
-                                                                <Copy className="w-4 h-4" />
-                                                            </Button>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            )}
+                                    {permissions.canManageMembers && (
+                                        <div className="pt-4 border-t border-gray-100 dark:border-gray-700">
+                                            <p className="text-xs text-gray-400 dark:text-gray-500 flex items-center gap-1.5">
+                                                <ShieldCheck className="w-3.5 h-3.5" />
+                                                Manage members and invite codes in the <button onClick={() => setActiveTab('members')} className="text-indigo-500 underline">Members tab</button>
+                                            </p>
                                         </div>
                                     )}
                                 </div>
