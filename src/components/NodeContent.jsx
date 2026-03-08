@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { createPageUrl } from '@/utils';
 import VersionHistoryModal from '@/components/modals/VersionHistoryModal';
+import DocEditor from '@/components/NodeContent/DocEditor';
 
 export default function NodeContent({ user, node, onClose, onUpdate, onDelete }) {
     // Local state for the node content
