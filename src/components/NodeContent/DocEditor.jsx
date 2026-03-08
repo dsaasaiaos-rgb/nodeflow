@@ -76,6 +76,12 @@ Keep the original intent intact.\n\nOriginal:\n${localContent}`,
 
     return (
         <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm flex flex-col gap-4">
+            {readOnly && (
+                <div className="flex items-center gap-2 px-3 py-2 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg text-xs text-amber-700 dark:text-amber-400">
+                    <Eye className="w-3.5 h-3.5" />
+                    You have read-only access to this document
+                </div>
+            )}
             <div className="flex items-center justify-between flex-wrap gap-2">
                 <Label className="text-lg font-bold text-gray-900 dark:text-white">{label}</Label>
                 <div className="flex flex-wrap gap-2">
