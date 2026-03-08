@@ -19,7 +19,7 @@ const DOC_SUGGESTIONS = {
     siteCode: ['Environment setup steps', 'Deployment checklist', 'API integration notes', 'Tech stack details'],
 };
 
-export default function DocEditor({ docKey, node, content, onSave, onShowHistory }) {
+export default function DocEditor({ docKey, node, content, onSave, onShowHistory, readOnly = false }) {
     const [localContent, setLocalContent] = useState(content || '');
     const [aiLoading, setAiLoading] = useState(false);
     const [aiAction, setAiAction] = useState(null);
