@@ -26,7 +26,9 @@ export default function NodeContent({ user, node, onClose, onUpdate, onDelete })
     const [summaries, setSummaries] = useState({});
     const [showSummary, setShowSummary] = useState({});
     const [inviteCodes, setInviteCodes] = useState([]);
-    const [isOwner, setIsOwner] = useState(false);
+    const [permissions, setPermissions] = useState({});
+    const [myRole, setMyRole] = useState(null);
+    const [members, setMembers] = useState([]);
     const [creatingInvite, setCreatingInvite] = useState(false);
     const [showVersionHistory, setShowVersionHistory] = useState(null);
     const messagesEndRef = useRef(null);
