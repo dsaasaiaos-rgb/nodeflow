@@ -1,4 +1,21 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.20';
+
+// Permission matrix per role
+function buildPermissions(role, isAppAdmin) {
+    if (isAppAdmin || role === 'owner') {
+        return { canView: true, canEditNode: true, canEditDocs: true, canDelete: true, canManageMembers: true, canChat: true };
+    }
+    if (role === 'member') {
+        return { canView: true, canEditNode: false, canEditDocs: true, canDelete: false, canManageMembers: false, canChat: true };
+    }
+    if (role === 'client') {
+        return { canView: true, canEditNode: false, canEditDocs: false, canDelete: false, canManageMembers: false, canChat: true };
+    }
+    if (role === 'viewer') {
+        return { canView: true, canEditNode: false, canEditDocs: false, canDelete: false, canManageMembers: false, canChat: false };
+    }
+    return { canView: false, canEditNode: false, canEditDocs: false, canDelete: false, canManageMembers: false, canChat: false };
+}
 
 Deno.serve(async (req) => {
     try {
@@ -10,28 +27,34 @@ Deno.serve(async (req) => {
         }
 
         const { nodeId } = await req.json();
+        const isAppAdmin = user.role === 'admin';
 
-        // Verify user has access to this node
         const memberships = await base44.asServiceRole.entities.NodeMember.filter({ nodeId, userId: user.id });
-        const isOwner = memberships.some(m => m.role === 'owner');
-        const isAdmin = user.role === 'admin';
-        
-        if (memberships.length === 0 && !isAdmin) {
+        const myMembership = memberships[0];
+
+        if (!myMembership && !isAppAdmin) {
             return Response.json({ error: 'Access denied' }, { status: 403 });
         }
 
-        // Fetch node details, messages and docs
-        const node = await base44.asServiceRole.entities.Node.get(nodeId);
-        const messages = await base44.asServiceRole.entities.NodeMessage.filter({ nodeId }, '-created_date');
-        const docs = await base44.asServiceRole.entities.NodeDoc.filter({ nodeId });
+        const myRole = isAppAdmin ? 'owner' : myMembership.role;
+        const permissions = buildPermissions(myRole, isAppAdmin);
 
-        // Only fetch invite codes for owners/admins
+        const [node, messages, docs] = await Promise.all([
+            base44.asServiceRole.entities.Node.get(nodeId),
+            base44.asServiceRole.entities.NodeMessage.filter({ nodeId }, '-created_date'),
+            base44.asServiceRole.entities.NodeDoc.filter({ nodeId }),
+        ]);
+
         let inviteCodes = [];
-        if (isOwner || isAdmin) {
-            inviteCodes = await base44.asServiceRole.entities.NodeInvite.filter({ nodeId });
+        let members = [];
+        if (permissions.canManageMembers) {
+            [inviteCodes, members] = await Promise.all([
+                base44.asServiceRole.entities.NodeInvite.filter({ nodeId }),
+                base44.asServiceRole.entities.NodeMember.filter({ nodeId }),
+            ]);
         }
 
-        return Response.json({ node, messages, docs, isOwner: isOwner || isAdmin, inviteCodes });
+        return Response.json({ node, messages, docs, permissions, myRole, inviteCodes, members });
     } catch (error) {
         return Response.json({ error: error.message }, { status: 500 });
     }

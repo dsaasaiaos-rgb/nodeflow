@@ -1,21 +1,21 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.20';
 
 Deno.serve(async (req) => {
     try {
         const base44 = createClientFromRequest(req);
         const user = await base44.auth.me();
 
-        if (!user) {
-            return Response.json({ error: 'Unauthorized' }, { status: 401 });
-        }
+        if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
         const { nodeId, content } = await req.json();
 
-        // Verify access
+        const isAppAdmin = user.role === 'admin';
         const memberships = await base44.asServiceRole.entities.NodeMember.filter({ nodeId, userId: user.id });
-        
-        if (memberships.length === 0 && user.role !== 'admin') {
-            return Response.json({ error: 'Access denied' }, { status: 403 });
+        const myRole = memberships[0]?.role;
+        const canChat = isAppAdmin || myRole === 'owner' || myRole === 'member' || myRole === 'client';
+
+        if (!canChat) {
+            return Response.json({ error: 'Viewers cannot send messages' }, { status: 403 });
         }
 
         const message = await base44.asServiceRole.entities.NodeMessage.create({
