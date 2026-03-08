@@ -263,7 +263,12 @@ Document:\n${content}`;
                     </a>
                 </div>
                 <div className="flex items-center gap-2">
-                    {isOwner && (
+                    {myRole && (
+                        <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-800 capitalize">
+                            {myRole}
+                        </span>
+                    )}
+                    {permissions.canDelete && (
                         <Button
                             onClick={handleDeleteNode}
                             disabled={isSaving}
@@ -275,18 +280,20 @@ Document:\n${content}`;
                             <Trash2 className="w-4 h-4" />
                         </Button>
                     )}
-                    <Button
-                        onClick={handleSaveNode}
-                        disabled={!hasChanges || isSaving}
-                        className={`${
-                            hasChanges && !isSaving
-                                ? 'bg-indigo-600 hover:bg-indigo-700 shadow-lg' 
-                                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                        } transition-all`}
-                    >
-                        {isSaving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
-                        Save Changes
-                    </Button>
+                    {permissions.canEditNode && (
+                        <Button
+                            onClick={handleSaveNode}
+                            disabled={!hasChanges || isSaving}
+                            className={`${
+                                hasChanges && !isSaving
+                                    ? 'bg-indigo-600 hover:bg-indigo-700 shadow-lg' 
+                                    : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                            } transition-all`}
+                        >
+                            {isSaving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
+                            Save Changes
+                        </Button>
+                    )}
                 </div>
             </div>
 
