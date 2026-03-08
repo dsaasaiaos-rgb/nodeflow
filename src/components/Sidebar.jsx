@@ -93,7 +93,7 @@ export default function Sidebar({ user, nodes, currentNode, currentView, onSelec
                             onClick={() => {
                                 window.location.href = createPageUrl('Integrations');
                             }}
-                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl mb-4 transition-all ${
+                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl mb-2 transition-all ${
                                 currentView === 'integrations'
                                     ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-200 dark:shadow-indigo-900/50'
                                     : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
@@ -101,6 +101,20 @@ export default function Sidebar({ user, nodes, currentNode, currentView, onSelec
                         >
                             <Zap className="w-5 h-5" />
                             <span className="font-semibold">Integrations</span>
+                        </button>
+
+                        <button
+                            onClick={() => {
+                                window.location.href = createPageUrl('Agent');
+                            }}
+                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl mb-4 transition-all ${
+                                currentView === 'agent'
+                                    ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-200 dark:shadow-indigo-900/50'
+                                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                            }`}
+                        >
+                            <Bot className="w-5 h-5" />
+                            <span className="font-semibold">AI Assistant</span>
                         </button>
 
                         <div className="mb-3 mt-6">
