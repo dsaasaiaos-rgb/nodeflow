@@ -137,7 +137,7 @@ Keep the original intent intact.\n\nOriginal:\n${localContent}`,
                         </Button>
                     )}
                     {/* Generate */}
-                    {isEmpty && (
+                    {!readOnly && isEmpty && (
                         <Button
                             onClick={() => callAI('generate')}
                             disabled={aiLoading}
