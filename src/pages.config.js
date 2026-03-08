@@ -52,6 +52,7 @@ import MasterHub from './pages/MasterHub';
 import Messages from './pages/Messages';
 import NodeView from './pages/NodeView';
 import Integrations from './pages/Integrations';
+import Agent from './pages/Agent';
 import __Layout from './Layout.jsx';
 
 
@@ -61,6 +62,7 @@ export const PAGES = {
     "Messages": Messages,
     "NodeView": NodeView,
     "Integrations": Integrations,
+    "Agent": Agent,
 }
 
 export const pagesConfig = {
