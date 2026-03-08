@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Sparkles, Loader2, History, ChevronDown, Wand2, CheckCheck, BookOpen } from 'lucide-react';
+import { Sparkles, Loader2, History, ChevronDown, Wand2, CheckCheck, BookOpen, Eye } from 'lucide-react';
 
 const DOC_LABELS = {
     agreement: 'Service Agreement',
