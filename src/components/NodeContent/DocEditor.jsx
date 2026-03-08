@@ -125,7 +125,7 @@ Keep the original intent intact.\n\nOriginal:\n${localContent}`,
                         </Button>
                     )}
                     {/* Polish */}
-                    {!isEmpty && (
+                    {!readOnly && !isEmpty && (
                         <Button
                             onClick={() => callAI('polish')}
                             disabled={aiLoading}
