@@ -101,12 +101,10 @@ export default function HubPage() {
         return 0;
     });
 
-    const statusColors = {
-        'Active': 'bg-green-500',
-        'In Progress': 'bg-indigo-500',
-        'On Hold': 'bg-yellow-500',
-        'Completed': 'bg-blue-500',
-    };
+    const totalPages = Math.max(1, Math.ceil(filteredNodes.length / PAGE_SIZE));
+    const safePage = Math.min(currentPage, totalPages);
+    const pagedNodes = filteredNodes.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+    const allPageChecked = pagedNodes.length > 0 && pagedNodes.every(n => checkedIds.has(n.id));
 
     if (isLoading) {
         return (
