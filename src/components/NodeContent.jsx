@@ -484,12 +484,63 @@ Document:\n${content}`;
                                     docKey={activeTab === 'code' ? 'siteCode' : activeTab}
                                     node={editedNode}
                                     content={docs[activeTab === 'code' ? 'siteCode' : activeTab] || ''}
+                                    readOnly={!permissions.canEditDocs}
                                     onSave={(key, content) => {
                                         handleSaveDoc(key, content);
                                         setDocs(prev => ({ ...prev, [key]: content }));
                                     }}
                                     onShowHistory={(key) => setShowVersionHistory(key)}
                                 />
+                            )}
+
+                            {activeTab === 'members' && permissions.canManageMembers && (
+                                <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm">
+                                    <MembersPanel
+                                        nodeId={node.id}
+                                        members={members}
+                                        currentUserId={user.id}
+                                    />
+                                    {permissions.canManageMembers && (
+                                        <div className="mt-6 pt-6 border-t border-gray-100 dark:border-gray-700">
+                                            <div className="flex items-center justify-between mb-4">
+                                                <h3 className="text-sm font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                                                    <Key className="w-4 h-4" />
+                                                    Invite Codes
+                                                </h3>
+                                                <div className="flex gap-2">
+                                                    <Button onClick={() => handleCreateInvite('member')} disabled={creatingInvite} size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-xs">
+                                                        {creatingInvite ? <Loader2 className="w-3 h-3 animate-spin" /> : <Users className="w-3 h-3 mr-1" />}
+                                                        Member Invite
+                                                    </Button>
+                                                    <Button onClick={() => handleCreateInvite('client')} disabled={creatingInvite} size="sm" variant="outline" className="text-xs">
+                                                        Client Invite
+                                                    </Button>
+                                                    <Button onClick={() => handleCreateInvite('viewer')} disabled={creatingInvite} size="sm" variant="outline" className="text-xs">
+                                                        Viewer Invite
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                            {inviteCodes.length === 0 ? (
+                                                <p className="text-sm text-gray-500 dark:text-gray-400">No invite codes yet.</p>
+                                            ) : (
+                                                <div className="space-y-2">
+                                                    {inviteCodes.map((invite, idx) => (
+                                                        <div key={idx} className="flex items-center justify-between p-3 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 rounded-xl border border-indigo-100 dark:border-indigo-800">
+                                                            <div>
+                                                                <span className="font-mono font-bold text-indigo-600 dark:text-indigo-400 tracking-wider">{invite.codeHash}</span>
+                                                                <span className="ml-3 px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-400 capitalize">{invite.roleToGrant}</span>
+                                                                <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">({invite.usesLeft} uses left)</span>
+                                                            </div>
+                                                            <Button onClick={() => copyToClipboard(invite.codeHash)} size="sm" variant="ghost" className="text-indigo-600 dark:text-indigo-400">
+                                                                <Copy className="w-4 h-4" />
+                                                            </Button>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
                             )}
                         </div>
                     </div>
