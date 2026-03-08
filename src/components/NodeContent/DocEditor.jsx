@@ -113,7 +113,7 @@ Keep the original intent intact.\n\nOriginal:\n${localContent}`,
                         )}
                     </div>}
                     {/* Grammar Check */}
-                    {!isEmpty && (
+                    {!readOnly && !isEmpty && (
                         <Button
                             onClick={() => callAI('grammarCheck')}
                             disabled={aiLoading}
