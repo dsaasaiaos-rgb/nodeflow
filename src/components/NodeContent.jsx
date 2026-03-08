@@ -234,6 +234,7 @@ Document:\n${content}`;
         { id: 'agreement', label: 'Agreement', icon: FileText },
         { id: 'sow', label: 'SOW', icon: FileCode },
         { id: 'oosw', label: 'OOSW', icon: AlertCircle },
+        ...(permissions.canManageMembers ? [{ id: 'members', label: 'Members', icon: ShieldCheck }] : []),
     ];
 
     return (
