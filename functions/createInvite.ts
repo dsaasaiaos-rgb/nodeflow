@@ -1,31 +1,30 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.20';
 
 Deno.serve(async (req) => {
     try {
         const base44 = createClientFromRequest(req);
         const user = await base44.auth.me();
 
-        if (!user) {
-            return Response.json({ error: 'Unauthorized' }, { status: 401 });
-        }
+        if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
         const { nodeId, roleToGrant } = await req.json();
 
-        // Verify user has permission (owner or admin)
+        const allowedRoles = ['member', 'client', 'viewer'];
+        const role = allowedRoles.includes(roleToGrant) ? roleToGrant : 'client';
+
         const memberships = await base44.asServiceRole.entities.NodeMember.filter({ nodeId, userId: user.id });
-        const isOwner = memberships.some(m => m.role === 'owner');
-        
-        if (!isOwner && user.role !== 'admin') {
+        const canManage = user.role === 'admin' || memberships[0]?.role === 'owner';
+
+        if (!canManage) {
             return Response.json({ error: 'Only owners can create invites' }, { status: 403 });
         }
 
-        // Generate random code
         const code = Math.random().toString(36).substring(2, 10).toUpperCase();
 
         await base44.asServiceRole.entities.NodeInvite.create({
             nodeId,
             codeHash: code,
-            roleToGrant: roleToGrant || 'client',
+            roleToGrant: role,
             usesLeft: 1
         });
 
