@@ -267,6 +267,20 @@ export default function HubPage() {
                                 </div>
                             </div>
                         </div>
+                        {/* Select-all bar */}
+                        {pagedNodes.length > 0 && (
+                            <div className="px-6 py-2 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 flex items-center gap-3">
+                                <input
+                                    type="checkbox"
+                                    checked={allPageChecked}
+                                    onChange={e => handleSelectAll(e.target.checked)}
+                                    className="w-4 h-4 rounded border-gray-300 text-indigo-600"
+                                />
+                                <span className="text-xs text-gray-500 dark:text-gray-400">
+                                    {checkedIds.size > 0 ? `${checkedIds.size} selected` : `Select all on page`}
+                                </span>
+                            </div>
+                        )}
                         <div className="divide-y divide-gray-100 dark:divide-gray-700">
                             {filteredNodes.length === 0 ? (
                                 <div className="p-16 text-center text-gray-500 dark:text-gray-400">
@@ -279,52 +293,55 @@ export default function HubPage() {
                                     {nodes.length === 0 && <p className="text-sm">Create or join a node to get started!</p>}
                                 </div>
                             ) : (
-                                filteredNodes.map((node, index) => (
-                                    <motion.div
+                                pagedNodes.map((node, index) => (
+                                    <NodeListItem
                                         key={node.id}
-                                        initial={{ opacity: 0, x: -20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        transition={{ delay: 0.1 * index }}
-                                        onClick={() => handleNodeClick(node)}
-                                        className="p-6 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 dark:hover:from-indigo-900/20 dark:hover:to-purple-900/20 cursor-pointer transition-all group"
-                                    >
-                                        <div className="flex items-start justify-between">
-                                            <div className="flex-1">
-                                                <div className="flex items-center gap-3 mb-2">
-                                                    <h3 className="font-bold text-gray-900 dark:text-white text-xl group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">{node.name}</h3>
-                                                    <div className={`w-2.5 h-2.5 rounded-full ${statusColors[node.status] || 'bg-gray-400'} ${node.status === 'Active' ? 'animate-pulse' : ''}`} title={node.status} />
-                                                </div>
-                                                <p className="text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">{node.description}</p>
-                                                <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
-                                                    <span className="flex items-center gap-1.5">
-                                                        <Clock className="w-4 h-4" />
-                                                        {new Date(node.created_date).toLocaleDateString()}
-                                                    </span>
-                                                    <a
-                                                        href={node.url}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 flex items-center gap-1.5 hover:underline font-medium"
-                                                        onClick={(e) => e.stopPropagation()}
-                                                    >
-                                                        <ExternalLink className="w-4 h-4" />
-                                                        Visit Site
-                                                    </a>
-                                                </div>
-                                            </div>
-                                            <span className={`px-4 py-1.5 rounded-full text-sm font-semibold ${
-                                                node.status === 'Active' ? 'bg-green-100 text-green-700 border border-green-200' : 
-                                                node.status === 'Completed' ? 'bg-blue-100 text-blue-700 border border-blue-200' : 
-                                                node.status === 'On Hold' ? 'bg-yellow-100 text-yellow-700 border border-yellow-200' :
-                                                'bg-gray-100 text-gray-700 border border-gray-200'
-                                            }`}>
-                                                {node.status}
-                                            </span>
-                                        </div>
-                                    </motion.div>
+                                        node={node}
+                                        index={index}
+                                        selected={checkedIds.has(node.id)}
+                                        onSelect={handleNodeClick}
+                                        onCheck={handleCheck}
+                                    />
                                 ))
                             )}
                         </div>
+                        {/* Pagination */}
+                        {totalPages > 1 && (
+                            <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
+                                <span className="text-sm text-gray-500 dark:text-gray-400">
+                                    Page {safePage} of {totalPages} · {filteredNodes.length} nodes
+                                </span>
+                                <div className="flex gap-2">
+                                    <button
+                                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                                        disabled={safePage === 1}
+                                        className="p-1.5 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-40 transition-colors"
+                                    >
+                                        <ChevronLeft className="w-4 h-4" />
+                                    </button>
+                                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                                        <button
+                                            key={p}
+                                            onClick={() => setCurrentPage(p)}
+                                            className={`w-8 h-8 rounded-lg text-sm font-semibold transition-colors ${
+                                                p === safePage
+                                                    ? 'bg-indigo-600 text-white'
+                                                    : 'border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                            }`}
+                                        >
+                                            {p}
+                                        </button>
+                                    ))}
+                                    <button
+                                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                                        disabled={safePage === totalPages}
+                                        className="p-1.5 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-40 transition-colors"
+                                    >
+                                        <ChevronRight className="w-4 h-4" />
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                     </motion.div>
                 </div>
             </div>
