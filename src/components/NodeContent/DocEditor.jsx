@@ -173,8 +173,9 @@ Keep the original intent intact.\n\nOriginal:\n${localContent}`,
 
             <textarea
                 value={localContent}
-                onChange={e => setLocalContent(e.target.value)}
-                onBlur={() => onSave(docKey, localContent)}
+                onChange={e => !readOnly && setLocalContent(e.target.value)}
+                onBlur={() => !readOnly && onSave(docKey, localContent)}
+                readOnly={readOnly}
                 className={`min-h-[500px] w-full rounded-xl p-4 text-sm leading-relaxed resize-y border focus:ring-2 focus:ring-indigo-500 outline-none font-mono ${
                     docKey === 'siteCode'
                         ? 'bg-slate-900 text-slate-100 border-slate-700'
