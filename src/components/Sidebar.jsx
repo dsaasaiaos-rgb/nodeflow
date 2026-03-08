@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Home, LogOut, Menu, X, Moon, Sun, MessageSquare, Zap } from 'lucide-react';
+import { Home, LogOut, Menu, X, Moon, Sun, MessageSquare, Zap, Bot } from 'lucide-react';
 import { createPageUrl } from '@/utils';
 import { motion } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
