@@ -61,6 +61,31 @@ export default function HubPage() {
         setNodes(prev => prev.map(n => n.id === updatedNode.id ? updatedNode : n));
     };
 
+    const handleCheck = (id, checked) => {
+        setCheckedIds(prev => {
+            const next = new Set(prev);
+            checked ? next.add(id) : next.delete(id);
+            return next;
+        });
+    };
+
+    const handleSelectAll = (checked) => {
+        if (checked) setCheckedIds(new Set(pagedNodes.map(n => n.id)));
+        else setCheckedIds(new Set());
+    };
+
+    const handleBulkDelete = async () => {
+        if (!checkedIds.size) return;
+        if (!confirm(`Delete ${checkedIds.size} node(s)? This cannot be undone.`)) return;
+        setBulkDeleting(true);
+        for (const id of checkedIds) {
+            await base44.functions.invoke('deleteNode', { nodeId: id });
+        }
+        setBulkDeleting(false);
+        setCheckedIds(new Set());
+        loadData();
+    };
+
     const selectedNode = nodes.find(n => n.id === selectedNodeId);
 
     const filteredNodes = nodes.filter(node => {
