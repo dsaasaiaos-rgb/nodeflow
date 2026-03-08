@@ -111,7 +111,7 @@ Keep the original intent intact.\n\nOriginal:\n${localContent}`,
                                 ))}
                             </div>
                         )}
-                    </div>
+                    </div>}
                     {/* Grammar Check */}
                     {!isEmpty && (
                         <Button
