@@ -468,77 +468,17 @@ Document:\n${content}`;
                             )}
 
                             {['agreement', 'sow', 'oosw', 'code'].includes(activeTab) && (
-                                <div className="h-full flex flex-col bg-white dark:bg-gray-800 p-8 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm">
-                                    <div className="flex justify-between items-end mb-4">
-                                        <Label className="text-lg font-bold text-gray-900 dark:text-white capitalize">
-                                            {activeTab === 'code' ? 'Technical Implementation Notes' : 
-                                             activeTab === 'oosw' ? 'Out of Scope Work (Billable)' :
-                                             activeTab === 'sow' ? 'Statement of Work' : 'Service Agreement'}
-                                        </Label>
-                                        <div className="flex gap-2">
-                                                      <Button
-                                                          onClick={() => setShowVersionHistory(activeTab === 'code' ? 'siteCode' : activeTab)}
-                                                          variant="outline"
-                                                          className="text-xs flex items-center gap-2"
-                                                      >
-                                                          <History className="w-3 h-3" />
-                                                          History
-                                                      </Button>
-                                                      {activeTab !== 'code' && (
-                                                          <Button
-                                                              onClick={() => {
-                                                                  const key = activeTab;
-                                                                  if (showSummary[key]) {
-                                                                      setShowSummary(prev => ({...prev, [key]: false}));
-                                                                  } else {
-                                                                      handleSummarize(key, docs[key]);
-                                                                  }
-                                                              }}
-                                                              disabled={aiLoading}
-                                                              variant="outline"
-                                                              className="text-xs flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-none hover:shadow-lg"
-                                                          >
-                                                              {aiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
-                                                              {showSummary[activeTab] ? 'Hide Summary' : 'Summarize'}
-                                                          </Button>
-                                                      )}
-                                                      <Button
-                                                          onClick={() => handleAIPolish(activeTab === 'code' ? 'siteCode' : activeTab, docs[activeTab === 'code' ? 'siteCode' : activeTab])}
-                                                          disabled={aiLoading}
-                                                          variant="outline"
-                                                          className="text-xs flex items-center gap-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white border-none hover:shadow-lg"
-                                                      >
-                                                          {aiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
-                                                          Polish with AI
-                                                      </Button>
-                                                  </div>
-                                    </div>
-
-                                    {showSummary[activeTab] && summaries[activeTab] && (
-                                        <div className="mb-4 p-4 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 border border-emerald-200 dark:border-emerald-800 rounded-xl">
-                                            <div className="flex items-start gap-2 mb-2">
-                                                <Sparkles className="w-4 h-4 text-emerald-600 dark:text-emerald-400 mt-1 flex-shrink-0" />
-                                                <h4 className="font-bold text-emerald-900 dark:text-emerald-200 text-sm">AI Summary</h4>
-                                            </div>
-                                            <div className="text-sm text-emerald-900 dark:text-emerald-100 whitespace-pre-wrap leading-relaxed pl-6">
-                                                {summaries[activeTab]}
-                                            </div>
-                                        </div>
-                                    )}
-                                    <Textarea
-                                        key={activeTab}
-                                        defaultValue={docs[activeTab === 'code' ? 'siteCode' : activeTab] || ''}
-                                        onBlur={(e) => handleSaveDoc(activeTab === 'code' ? 'siteCode' : activeTab, e.target.value)}
-                                        className={`flex-1 min-h-[600px] leading-relaxed ${
-                                            activeTab === 'code' 
-                                                ? 'bg-slate-900 text-slate-50 font-mono text-sm' 
-                                                : activeTab === 'oosw' 
-                                                    ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800 dark:text-yellow-100' 
-                                                    : 'bg-gray-900 text-gray-100 dark:bg-gray-950 dark:text-gray-100'
-                                        }`}
-                                        placeholder={activeTab === 'code' ? "// Technical notes..." : "Enter details here..."}
-                                    />
-                                </div>
+                                <DocEditor
+                                    key={activeTab}
+                                    docKey={activeTab === 'code' ? 'siteCode' : activeTab}
+                                    node={editedNode}
+                                    content={docs[activeTab === 'code' ? 'siteCode' : activeTab] || ''}
+                                    onSave={(key, content) => {
+                                        handleSaveDoc(key, content);
+                                        setDocs(prev => ({ ...prev, [key]: content }));
+                                    }}
+                                    onShowHistory={(key) => setShowVersionHistory(key)}
+                                />
                             )}
                         </div>
                     </div>
