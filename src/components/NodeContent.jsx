@@ -582,32 +582,38 @@ Document:\n${content}`;
                         <div ref={messagesEndRef} />
                     </div>
 
-                    <div className="p-5 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
-                        <button 
-                            onClick={handleMagicDraft}
-                            disabled={aiLoading || messages.length === 0}
-                            className="mb-3 text-xs flex items-center gap-1.5 text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 disabled:opacity-50 font-medium"
-                        >
-                            {aiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
-                            Magic Draft
-                        </button>
-                        <div className="flex gap-2">
-                            <Input
-                                value={newMessage}
-                                onChange={(e) => setNewMessage(e.target.value)}
-                                onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-                                placeholder="Type a message..."
-                                className="flex-1"
-                            />
-                            <Button 
-                                onClick={handleSend}
-                                className="bg-indigo-600 hover:bg-indigo-700"
-                                size="icon"
+                    {permissions.canChat ? (
+                        <div className="p-5 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+                            <button 
+                                onClick={handleMagicDraft}
+                                disabled={aiLoading || messages.length === 0}
+                                className="mb-3 text-xs flex items-center gap-1.5 text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 disabled:opacity-50 font-medium"
                             >
-                                <Send className="w-4 h-4" />
-                            </Button>
+                                {aiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+                                Magic Draft
+                            </button>
+                            <div className="flex gap-2">
+                                <Input
+                                    value={newMessage}
+                                    onChange={(e) => setNewMessage(e.target.value)}
+                                    onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                                    placeholder="Type a message..."
+                                    className="flex-1"
+                                />
+                                <Button 
+                                    onClick={handleSend}
+                                    className="bg-indigo-600 hover:bg-indigo-700"
+                                    size="icon"
+                                >
+                                    <Send className="w-4 h-4" />
+                                </Button>
+                            </div>
                         </div>
-                    </div>
+                    ) : (
+                        <div className="p-5 border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 text-center text-xs text-gray-400 dark:text-gray-500">
+                            Viewers cannot send messages
+                        </div>
+                    )}
                 </div>
             </div>
 
