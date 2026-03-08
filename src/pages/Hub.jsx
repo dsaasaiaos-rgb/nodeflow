@@ -4,10 +4,13 @@ import Sidebar from '@/components/Sidebar';
 import CreateNodeModal from '@/components/modals/CreateNodeModal';
 import JoinNodeModal from '@/components/modals/JoinNodeModal';
 import { Button } from "@/components/ui/button";
-import { Plus, Key, ExternalLink, Home, Users, Clock, Loader2, Search, Filter, ArrowUpDown, X } from 'lucide-react';
+import { Plus, Key, ExternalLink, Home, Users, Clock, Loader2, Search, Filter, ArrowUpDown, X, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createPageUrl } from '@/utils';
 import NodeContent from '@/components/NodeContent';
+import NodeListItem from '@/components/hub/NodeListItem';
+
+const PAGE_SIZE = 8;
 
 export default function HubPage() {
     const [user, setUser] = useState(null);
@@ -17,6 +20,9 @@ export default function HubPage() {
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedNodeId, setSelectedNodeId] = useState(null);
+    const [checkedIds, setCheckedIds] = useState(new Set());
+    const [bulkDeleting, setBulkDeleting] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
     
     // Filter & Sort State
     const [searchTerm, setSearchTerm] = useState('');

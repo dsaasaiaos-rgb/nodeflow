@@ -47,22 +47,22 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
+import Agent from './pages/Agent';
 import Hub from './pages/Hub';
+import Integrations from './pages/Integrations';
 import MasterHub from './pages/MasterHub';
 import Messages from './pages/Messages';
 import NodeView from './pages/NodeView';
-import Integrations from './pages/Integrations';
-import Agent from './pages/Agent';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
+    "Agent": Agent,
     "Hub": Hub,
+    "Integrations": Integrations,
     "MasterHub": MasterHub,
     "Messages": Messages,
     "NodeView": NodeView,
-    "Integrations": Integrations,
-    "Agent": Agent,
 }
 
 export const pagesConfig = {
