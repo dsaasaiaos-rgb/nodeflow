@@ -201,7 +201,19 @@ export default function HubPage() {
                         className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
                     >
                         <div className="p-6 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-gray-50 to-white dark:from-gray-800 dark:to-gray-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Nodes</h2>
+                            <div className="flex items-center gap-3">
+                                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Nodes</h2>
+                                {checkedIds.size > 0 && (
+                                    <button
+                                        onClick={handleBulkDelete}
+                                        disabled={bulkDeleting}
+                                        className="flex items-center gap-1.5 px-3 py-1.5 bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400 rounded-lg text-sm font-semibold transition-colors"
+                                    >
+                                        {bulkDeleting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+                                        Delete {checkedIds.size}
+                                    </button>
+                                )}
+                            </div>
                             
                             <div className="flex flex-col md:flex-row gap-3">
                                 <div className="relative">
