@@ -59,10 +59,10 @@ export default function NodeContent({ user, node, onClose, onUpdate, onDelete })
             setMessages(data.messages);
             const docsMap = data.docs.reduce((acc, doc) => ({ ...acc, [doc.key]: doc.content }), {});
             setDocs(docsMap);
-            setIsOwner(data.isOwner);
-            if (data.inviteCodes) {
-                setInviteCodes(data.inviteCodes);
-            }
+            setPermissions(data.permissions || {});
+            setMyRole(data.myRole);
+            if (data.inviteCodes) setInviteCodes(data.inviteCodes);
+            if (data.members) setMembers(data.members);
         } catch (e) {
             console.error(e);
         } finally {
