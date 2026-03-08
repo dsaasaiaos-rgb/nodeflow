@@ -151,7 +151,7 @@ Keep the original intent intact.\n\nOriginal:\n${localContent}`,
                 </div>
             </div>
 
-            {isEmpty && !aiLoading && (
+            {isEmpty && !aiLoading && !readOnly && (
                 <div
                     onClick={() => callAI('generate')}
                     className="border-2 border-dashed border-indigo-200 dark:border-indigo-800 rounded-xl p-8 text-center cursor-pointer hover:border-indigo-400 hover:bg-indigo-50/30 dark:hover:bg-indigo-900/10 transition-all group"
