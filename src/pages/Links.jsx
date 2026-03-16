@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import Sidebar from '@/components/Sidebar';
 import { ExternalLink, Search, X } from 'lucide-react';
@@ -94,7 +94,7 @@ export default function LinksPage() {
     const [search, setSearch] = useState('');
     const [activeCategory, setActiveCategory] = useState('All');
 
-    React.useEffect(() => {
+    useEffect(() => {
         base44.auth.me().then(setUser).catch(() => base44.auth.redirectToLogin());
     }, []);
 
