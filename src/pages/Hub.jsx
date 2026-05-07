@@ -4,7 +4,7 @@ import Sidebar from '@/components/Sidebar';
 import CreateNodeModal from '@/components/modals/CreateNodeModal';
 import JoinNodeModal from '@/components/modals/JoinNodeModal';
 import { Button } from "@/components/ui/button";
-import { Plus, Key, ExternalLink, Home, Users, Clock, Loader2, Search, Filter, ArrowUpDown, X, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, Key, ExternalLink, Home, Users, Clock, Loader2, Search, Filter, ArrowUpDown, X, Trash2, ChevronLeft, ChevronRight, Download } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createPageUrl } from '@/utils';
 import NodeContent from '@/components/NodeContent';
@@ -100,6 +100,26 @@ export default function HubPage() {
     const safePage = Math.min(currentPage, totalPages);
     const pagedNodes = filteredNodes.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
     const allPageChecked = pagedNodes.length > 0 && pagedNodes.every(n => checkedIds.has(n.id));
+
+    const handleExportCSV = () => {
+        const headers = ['Name', 'Status', 'Description', 'URL', 'Created Date', 'Node ID'];
+        const rows = nodes.map(node => [
+            `"${(node.name || '').replace(/"/g, '""')}"`,
+            `"${(node.status || '').replace(/"/g, '""')}"`,
+            `"${(node.description || '').replace(/"/g, '""')}"`,
+            `"${(node.url || '').replace(/"/g, '""')}"`,
+            `"${node.created_date ? new Date(node.created_date).toLocaleDateString() : ''}"`,
+            `"${node.id || ''}"`,
+        ]);
+        const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `nodes-export-${new Date().toISOString().slice(0, 10)}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+    };
 
     const handleSelectAll = (checked) => {
         if (checked) setCheckedIds(new Set(pagedNodes.map(n => n.id)));
@@ -203,6 +223,15 @@ export default function HubPage() {
                         <div className="p-6 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-gray-50 to-white dark:from-gray-800 dark:to-gray-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
                             <div className="flex items-center gap-3">
                                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Nodes</h2>
+                                <button
+                                    onClick={handleExportCSV}
+                                    disabled={nodes.length === 0}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 rounded-lg text-sm font-semibold transition-colors disabled:opacity-40"
+                                    title="Export all nodes to CSV"
+                                >
+                                    <Download className="w-3.5 h-3.5" />
+                                    Export CSV
+                                </button>
                                 {checkedIds.size > 0 && (
                                     <button
                                         onClick={handleBulkDelete}
