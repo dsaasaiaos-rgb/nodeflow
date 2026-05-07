@@ -1,0 +1,79 @@
+{
+  "name": "ChatParticipant",
+  "type": "object",
+  "properties": {
+    "conversationId": {
+      "type": "string",
+      "description": "Reference to ChatConversation"
+    },
+    "userId": {
+      "type": "string",
+      "description": "Reference to User"
+    },
+    "hasRead": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether user has read the latest messages"
+    }
+  },
+  "required": [
+    "conversationId",
+    "userId"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "$or": [
+        {
+          "data.userId": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.userId": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.userId": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "data.conversationId": {
+            "$in": [
+              {
+                "from_entity": "ChatConversation",
+                "field": "id",
+                "filter": {
+                  "data.ownerId": "{{user.id}}"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
