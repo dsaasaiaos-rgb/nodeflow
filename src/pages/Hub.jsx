@@ -4,13 +4,10 @@ import Sidebar from '@/components/Sidebar';
 import CreateNodeModal from '@/components/modals/CreateNodeModal';
 import JoinNodeModal from '@/components/modals/JoinNodeModal';
 import { Button } from "@/components/ui/button";
-import { Plus, Key, ExternalLink, Home, Users, Clock, Loader2, Search, Filter, ArrowUpDown, X, Trash2, ChevronLeft, ChevronRight, Download } from 'lucide-react';
+import { Plus, Key, ExternalLink, Home, Users, Clock, Loader2, Search, Filter, ArrowUpDown, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createPageUrl } from '@/utils';
 import NodeContent from '@/components/NodeContent';
-import NodeListItem from '@/components/hub/NodeListItem';
-
-const PAGE_SIZE = 8;
 
 export default function HubPage() {
     const [user, setUser] = useState(null);
@@ -20,9 +17,6 @@ export default function HubPage() {
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedNodeId, setSelectedNodeId] = useState(null);
-    const [checkedIds, setCheckedIds] = useState(new Set());
-    const [bulkDeleting, setBulkDeleting] = useState(false);
-    const [currentPage, setCurrentPage] = useState(1);
     
     // Filter & Sort State
     const [searchTerm, setSearchTerm] = useState('');
@@ -61,26 +55,6 @@ export default function HubPage() {
         setNodes(prev => prev.map(n => n.id === updatedNode.id ? updatedNode : n));
     };
 
-    const handleCheck = (id, checked) => {
-        setCheckedIds(prev => {
-            const next = new Set(prev);
-            checked ? next.add(id) : next.delete(id);
-            return next;
-        });
-    };
-
-    const handleBulkDelete = async () => {
-        if (!checkedIds.size) return;
-        if (!confirm(`Delete ${checkedIds.size} node(s)? This cannot be undone.`)) return;
-        setBulkDeleting(true);
-        for (const id of checkedIds) {
-            await base44.functions.invoke('deleteNode', { nodeId: id });
-        }
-        setBulkDeleting(false);
-        setCheckedIds(new Set());
-        loadData();
-    };
-
     const selectedNode = nodes.find(n => n.id === selectedNodeId);
 
     const filteredNodes = nodes.filter(node => {
@@ -96,34 +70,11 @@ export default function HubPage() {
         return 0;
     });
 
-    const totalPages = Math.max(1, Math.ceil(filteredNodes.length / PAGE_SIZE));
-    const safePage = Math.min(currentPage, totalPages);
-    const pagedNodes = filteredNodes.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
-    const allPageChecked = pagedNodes.length > 0 && pagedNodes.every(n => checkedIds.has(n.id));
-
-    const handleExportCSV = () => {
-        const headers = ['Name', 'Status', 'Description', 'URL', 'Created Date', 'Node ID'];
-        const rows = nodes.map(node => [
-            `"${(node.name || '').replace(/"/g, '""')}"`,
-            `"${(node.status || '').replace(/"/g, '""')}"`,
-            `"${(node.description || '').replace(/"/g, '""')}"`,
-            `"${(node.url || '').replace(/"/g, '""')}"`,
-            `"${node.created_date ? new Date(node.created_date).toLocaleDateString() : ''}"`,
-            `"${node.id || ''}"`,
-        ]);
-        const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-        const blob = new Blob([csv], { type: 'text/csv' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `nodes-export-${new Date().toISOString().slice(0, 10)}.csv`;
-        a.click();
-        URL.revokeObjectURL(url);
-    };
-
-    const handleSelectAll = (checked) => {
-        if (checked) setCheckedIds(new Set(pagedNodes.map(n => n.id)));
-        else setCheckedIds(new Set());
+    const statusColors = {
+        'Active': 'bg-green-500',
+        'In Progress': 'bg-indigo-500',
+        'On Hold': 'bg-yellow-500',
+        'Completed': 'bg-blue-500',
     };
 
     if (isLoading) {
@@ -221,28 +172,7 @@ export default function HubPage() {
                         className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
                     >
                         <div className="p-6 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-gray-50 to-white dark:from-gray-800 dark:to-gray-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                            <div className="flex items-center gap-3">
-                                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Nodes</h2>
-                                <button
-                                    onClick={handleExportCSV}
-                                    disabled={nodes.length === 0}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 rounded-lg text-sm font-semibold transition-colors disabled:opacity-40"
-                                    title="Export all nodes to CSV"
-                                >
-                                    <Download className="w-3.5 h-3.5" />
-                                    Export CSV
-                                </button>
-                                {checkedIds.size > 0 && (
-                                    <button
-                                        onClick={handleBulkDelete}
-                                        disabled={bulkDeleting}
-                                        className="flex items-center gap-1.5 px-3 py-1.5 bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400 rounded-lg text-sm font-semibold transition-colors"
-                                    >
-                                        {bulkDeleting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
-                                        Delete {checkedIds.size}
-                                    </button>
-                                )}
-                            </div>
+                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Nodes</h2>
                             
                             <div className="flex flex-col md:flex-row gap-3">
                                 <div className="relative">
@@ -296,20 +226,6 @@ export default function HubPage() {
                                 </div>
                             </div>
                         </div>
-                        {/* Select-all bar */}
-                        {pagedNodes.length > 0 && (
-                            <div className="px-6 py-2 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 flex items-center gap-3">
-                                <input
-                                    type="checkbox"
-                                    checked={allPageChecked}
-                                    onChange={e => handleSelectAll(e.target.checked)}
-                                    className="w-4 h-4 rounded border-gray-300 text-indigo-600"
-                                />
-                                <span className="text-xs text-gray-500 dark:text-gray-400">
-                                    {checkedIds.size > 0 ? `${checkedIds.size} selected` : `Select all on page`}
-                                </span>
-                            </div>
-                        )}
                         <div className="divide-y divide-gray-100 dark:divide-gray-700">
                             {filteredNodes.length === 0 ? (
                                 <div className="p-16 text-center text-gray-500 dark:text-gray-400">
@@ -322,55 +238,52 @@ export default function HubPage() {
                                     {nodes.length === 0 && <p className="text-sm">Create or join a node to get started!</p>}
                                 </div>
                             ) : (
-                                pagedNodes.map((node, index) => (
-                                    <NodeListItem
+                                filteredNodes.map((node, index) => (
+                                    <motion.div
                                         key={node.id}
-                                        node={node}
-                                        index={index}
-                                        selected={checkedIds.has(node.id)}
-                                        onSelect={handleNodeClick}
-                                        onCheck={handleCheck}
-                                    />
+                                        initial={{ opacity: 0, x: -20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: 0.1 * index }}
+                                        onClick={() => handleNodeClick(node)}
+                                        className="p-6 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 dark:hover:from-indigo-900/20 dark:hover:to-purple-900/20 cursor-pointer transition-all group"
+                                    >
+                                        <div className="flex items-start justify-between">
+                                            <div className="flex-1">
+                                                <div className="flex items-center gap-3 mb-2">
+                                                    <h3 className="font-bold text-gray-900 dark:text-white text-xl group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">{node.name}</h3>
+                                                    <div className={`w-2.5 h-2.5 rounded-full ${statusColors[node.status] || 'bg-gray-400'} ${node.status === 'Active' ? 'animate-pulse' : ''}`} title={node.status} />
+                                                </div>
+                                                <p className="text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">{node.description}</p>
+                                                <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+                                                    <span className="flex items-center gap-1.5">
+                                                        <Clock className="w-4 h-4" />
+                                                        {new Date(node.created_date).toLocaleDateString()}
+                                                    </span>
+                                                    <a
+                                                        href={node.url}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 flex items-center gap-1.5 hover:underline font-medium"
+                                                        onClick={(e) => e.stopPropagation()}
+                                                    >
+                                                        <ExternalLink className="w-4 h-4" />
+                                                        Visit Site
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            <span className={`px-4 py-1.5 rounded-full text-sm font-semibold ${
+                                                node.status === 'Active' ? 'bg-green-100 text-green-700 border border-green-200' : 
+                                                node.status === 'Completed' ? 'bg-blue-100 text-blue-700 border border-blue-200' : 
+                                                node.status === 'On Hold' ? 'bg-yellow-100 text-yellow-700 border border-yellow-200' :
+                                                'bg-gray-100 text-gray-700 border border-gray-200'
+                                            }`}>
+                                                {node.status}
+                                            </span>
+                                        </div>
+                                    </motion.div>
                                 ))
                             )}
                         </div>
-                        {/* Pagination */}
-                        {totalPages > 1 && (
-                            <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
-                                <span className="text-sm text-gray-500 dark:text-gray-400">
-                                    Page {safePage} of {totalPages} · {filteredNodes.length} nodes
-                                </span>
-                                <div className="flex gap-2">
-                                    <button
-                                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                                        disabled={safePage === 1}
-                                        className="p-1.5 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-40 transition-colors"
-                                    >
-                                        <ChevronLeft className="w-4 h-4" />
-                                    </button>
-                                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
-                                        <button
-                                            key={p}
-                                            onClick={() => setCurrentPage(p)}
-                                            className={`w-8 h-8 rounded-lg text-sm font-semibold transition-colors ${
-                                                p === safePage
-                                                    ? 'bg-indigo-600 text-white'
-                                                    : 'border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
-                                            }`}
-                                        >
-                                            {p}
-                                        </button>
-                                    ))}
-                                    <button
-                                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                                        disabled={safePage === totalPages}
-                                        className="p-1.5 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-40 transition-colors"
-                                    >
-                                        <ChevronRight className="w-4 h-4" />
-                                    </button>
-                                </div>
-                            </div>
-                        )}
                     </motion.div>
                 </div>
             </div>

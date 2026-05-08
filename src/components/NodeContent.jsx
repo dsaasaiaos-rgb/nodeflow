@@ -6,12 +6,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { 
     Save, Settings, Code, FileText, FileCode, AlertCircle, 
-    MessageSquare, Send, Sparkles, Loader2, ExternalLink, Copy, Key, Users, X, Trash2, ShieldCheck
+    MessageSquare, Send, Sparkles, Loader2, ExternalLink, Home, Copy, Key, Users, History, X, Trash2
 } from 'lucide-react';
 import { createPageUrl } from '@/utils';
 import VersionHistoryModal from '@/components/modals/VersionHistoryModal';
-import DocEditor from '@/components/NodeContent/DocEditor';
-import MembersPanel from '@/components/NodeContent/MembersPanel';
 
 export default function NodeContent({ user, node, onClose, onUpdate, onDelete }) {
     // Local state for the node content
@@ -26,9 +24,7 @@ export default function NodeContent({ user, node, onClose, onUpdate, onDelete })
     const [summaries, setSummaries] = useState({});
     const [showSummary, setShowSummary] = useState({});
     const [inviteCodes, setInviteCodes] = useState([]);
-    const [permissions, setPermissions] = useState({});
-    const [myRole, setMyRole] = useState(null);
-    const [members, setMembers] = useState([]);
+    const [isOwner, setIsOwner] = useState(false);
     const [creatingInvite, setCreatingInvite] = useState(false);
     const [showVersionHistory, setShowVersionHistory] = useState(null);
     const messagesEndRef = useRef(null);
@@ -59,10 +55,10 @@ export default function NodeContent({ user, node, onClose, onUpdate, onDelete })
             setMessages(data.messages);
             const docsMap = data.docs.reduce((acc, doc) => ({ ...acc, [doc.key]: doc.content }), {});
             setDocs(docsMap);
-            setPermissions(data.permissions || {});
-            setMyRole(data.myRole);
-            if (data.inviteCodes) setInviteCodes(data.inviteCodes);
-            if (data.members) setMembers(data.members);
+            setIsOwner(data.isOwner);
+            if (data.inviteCodes) {
+                setInviteCodes(data.inviteCodes);
+            }
         } catch (e) {
             console.error(e);
         } finally {
@@ -234,7 +230,6 @@ Document:\n${content}`;
         { id: 'agreement', label: 'Agreement', icon: FileText },
         { id: 'sow', label: 'SOW', icon: FileCode },
         { id: 'oosw', label: 'OOSW', icon: AlertCircle },
-        ...(permissions.canManageMembers ? [{ id: 'members', label: 'Members', icon: ShieldCheck }] : []),
     ];
 
     return (
@@ -263,12 +258,7 @@ Document:\n${content}`;
                     </a>
                 </div>
                 <div className="flex items-center gap-2">
-                    {myRole && (
-                        <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-800 capitalize">
-                            {myRole}
-                        </span>
-                    )}
-                    {permissions.canDelete && (
+                    {isOwner && (
                         <Button
                             onClick={handleDeleteNode}
                             disabled={isSaving}
@@ -280,20 +270,18 @@ Document:\n${content}`;
                             <Trash2 className="w-4 h-4" />
                         </Button>
                     )}
-                    {permissions.canEditNode && (
-                        <Button
-                            onClick={handleSaveNode}
-                            disabled={!hasChanges || isSaving}
-                            className={`${
-                                hasChanges && !isSaving
-                                    ? 'bg-indigo-600 hover:bg-indigo-700 shadow-lg' 
-                                    : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                            } transition-all`}
-                        >
-                            {isSaving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
-                            Save Changes
-                        </Button>
-                    )}
+                    <Button
+                        onClick={handleSaveNode}
+                        disabled={!hasChanges || isSaving}
+                        className={`${
+                            hasChanges && !isSaving
+                                ? 'bg-indigo-600 hover:bg-indigo-700 shadow-lg' 
+                                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                        } transition-all`}
+                    >
+                        {isSaving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
+                        Save Changes
+                    </Button>
                 </div>
             </div>
 
@@ -414,71 +402,59 @@ Document:\n${content}`;
                                         </div>
                                     </div>
 
-                                    {permissions.canManageMembers && (
-                                        <div className="pt-4 border-t border-gray-100 dark:border-gray-700">
-                                            <p className="text-xs text-gray-400 dark:text-gray-500 flex items-center gap-1.5">
-                                                <ShieldCheck className="w-3.5 h-3.5" />
-                                                Manage members and invite codes in the <button onClick={() => setActiveTab('members')} className="text-indigo-500 underline">Members tab</button>
-                                            </p>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-
-                            {['agreement', 'sow', 'oosw', 'code'].includes(activeTab) && (
-                                <DocEditor
-                                    key={activeTab}
-                                    docKey={activeTab === 'code' ? 'siteCode' : activeTab}
-                                    node={editedNode}
-                                    content={docs[activeTab === 'code' ? 'siteCode' : activeTab] || ''}
-                                    readOnly={!permissions.canEditDocs}
-                                    onSave={(key, content) => {
-                                        handleSaveDoc(key, content);
-                                        setDocs(prev => ({ ...prev, [key]: content }));
-                                    }}
-                                    onShowHistory={(key) => setShowVersionHistory(key)}
-                                />
-                            )}
-
-                            {activeTab === 'members' && permissions.canManageMembers && (
-                                <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm">
-                                    <MembersPanel
-                                        nodeId={node.id}
-                                        members={members}
-                                        currentUserId={user.id}
-                                    />
-                                    {permissions.canManageMembers && (
-                                        <div className="mt-6 pt-6 border-t border-gray-100 dark:border-gray-700">
+                                    {isOwner && (
+                                        <div className="pt-6 border-t border-gray-100 dark:border-gray-700">
                                             <div className="flex items-center justify-between mb-4">
                                                 <h3 className="text-sm font-bold text-gray-900 dark:text-white flex items-center gap-2">
                                                     <Key className="w-4 h-4" />
                                                     Invite Codes
                                                 </h3>
                                                 <div className="flex gap-2">
-                                                    <Button onClick={() => handleCreateInvite('member')} disabled={creatingInvite} size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-xs">
+                                                    <Button
+                                                        onClick={() => handleCreateInvite('client')}
+                                                        disabled={creatingInvite}
+                                                        size="sm"
+                                                        className="bg-indigo-600 hover:bg-indigo-700 text-xs"
+                                                    >
                                                         {creatingInvite ? <Loader2 className="w-3 h-3 animate-spin" /> : <Users className="w-3 h-3 mr-1" />}
-                                                        Member Invite
+                                                        New Client Code
                                                     </Button>
-                                                    <Button onClick={() => handleCreateInvite('client')} disabled={creatingInvite} size="sm" variant="outline" className="text-xs">
-                                                        Client Invite
-                                                    </Button>
-                                                    <Button onClick={() => handleCreateInvite('viewer')} disabled={creatingInvite} size="sm" variant="outline" className="text-xs">
-                                                        Viewer Invite
+                                                    <Button
+                                                        onClick={() => handleCreateInvite('member')}
+                                                        disabled={creatingInvite}
+                                                        size="sm"
+                                                        variant="outline"
+                                                        className="text-xs"
+                                                    >
+                                                        New Member Code
                                                     </Button>
                                                 </div>
                                             </div>
                                             {inviteCodes.length === 0 ? (
-                                                <p className="text-sm text-gray-500 dark:text-gray-400">No invite codes yet.</p>
+                                                <p className="text-sm text-gray-500 dark:text-gray-400">No invite codes yet. Create one to share access.</p>
                                             ) : (
                                                 <div className="space-y-2">
                                                     {inviteCodes.map((invite, idx) => (
                                                         <div key={idx} className="flex items-center justify-between p-3 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 rounded-xl border border-indigo-100 dark:border-indigo-800">
                                                             <div>
                                                                 <span className="font-mono font-bold text-indigo-600 dark:text-indigo-400 tracking-wider">{invite.codeHash}</span>
-                                                                <span className="ml-3 px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-400 capitalize">{invite.roleToGrant}</span>
-                                                                <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">({invite.usesLeft} uses left)</span>
+                                                                <span className={`ml-3 px-2 py-0.5 rounded-full text-xs font-medium ${
+                                                                    invite.roleToGrant === 'client' 
+                                                                        ? 'bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-400' 
+                                                                        : 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-400'
+                                                                }`}>
+                                                                    {invite.roleToGrant}
+                                                                </span>
+                                                                <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">
+                                                                    ({invite.usesLeft} uses left)
+                                                                </span>
                                                             </div>
-                                                            <Button onClick={() => copyToClipboard(invite.codeHash)} size="sm" variant="ghost" className="text-indigo-600 dark:text-indigo-400">
+                                                            <Button
+                                                                onClick={() => copyToClipboard(invite.codeHash)}
+                                                                size="sm"
+                                                                variant="ghost"
+                                                                className="text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/50"
+                                                            >
                                                                 <Copy className="w-4 h-4" />
                                                             </Button>
                                                         </div>
@@ -487,6 +463,80 @@ Document:\n${content}`;
                                             )}
                                         </div>
                                     )}
+                                </div>
+                            )}
+
+                            {['agreement', 'sow', 'oosw', 'code'].includes(activeTab) && (
+                                <div className="h-full flex flex-col bg-white dark:bg-gray-800 p-8 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm">
+                                    <div className="flex justify-between items-end mb-4">
+                                        <Label className="text-lg font-bold text-gray-900 dark:text-white capitalize">
+                                            {activeTab === 'code' ? 'Technical Implementation Notes' : 
+                                             activeTab === 'oosw' ? 'Out of Scope Work (Billable)' :
+                                             activeTab === 'sow' ? 'Statement of Work' : 'Service Agreement'}
+                                        </Label>
+                                        <div className="flex gap-2">
+                                                      <Button
+                                                          onClick={() => setShowVersionHistory(activeTab === 'code' ? 'siteCode' : activeTab)}
+                                                          variant="outline"
+                                                          className="text-xs flex items-center gap-2"
+                                                      >
+                                                          <History className="w-3 h-3" />
+                                                          History
+                                                      </Button>
+                                                      {activeTab !== 'code' && (
+                                                          <Button
+                                                              onClick={() => {
+                                                                  const key = activeTab;
+                                                                  if (showSummary[key]) {
+                                                                      setShowSummary(prev => ({...prev, [key]: false}));
+                                                                  } else {
+                                                                      handleSummarize(key, docs[key]);
+                                                                  }
+                                                              }}
+                                                              disabled={aiLoading}
+                                                              variant="outline"
+                                                              className="text-xs flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-none hover:shadow-lg"
+                                                          >
+                                                              {aiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+                                                              {showSummary[activeTab] ? 'Hide Summary' : 'Summarize'}
+                                                          </Button>
+                                                      )}
+                                                      <Button
+                                                          onClick={() => handleAIPolish(activeTab === 'code' ? 'siteCode' : activeTab, docs[activeTab === 'code' ? 'siteCode' : activeTab])}
+                                                          disabled={aiLoading}
+                                                          variant="outline"
+                                                          className="text-xs flex items-center gap-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white border-none hover:shadow-lg"
+                                                      >
+                                                          {aiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+                                                          Polish with AI
+                                                      </Button>
+                                                  </div>
+                                    </div>
+
+                                    {showSummary[activeTab] && summaries[activeTab] && (
+                                        <div className="mb-4 p-4 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 border border-emerald-200 dark:border-emerald-800 rounded-xl">
+                                            <div className="flex items-start gap-2 mb-2">
+                                                <Sparkles className="w-4 h-4 text-emerald-600 dark:text-emerald-400 mt-1 flex-shrink-0" />
+                                                <h4 className="font-bold text-emerald-900 dark:text-emerald-200 text-sm">AI Summary</h4>
+                                            </div>
+                                            <div className="text-sm text-emerald-900 dark:text-emerald-100 whitespace-pre-wrap leading-relaxed pl-6">
+                                                {summaries[activeTab]}
+                                            </div>
+                                        </div>
+                                    )}
+                                    <Textarea
+                                        key={activeTab}
+                                        defaultValue={docs[activeTab === 'code' ? 'siteCode' : activeTab] || ''}
+                                        onBlur={(e) => handleSaveDoc(activeTab === 'code' ? 'siteCode' : activeTab, e.target.value)}
+                                        className={`flex-1 min-h-[600px] leading-relaxed ${
+                                            activeTab === 'code' 
+                                                ? 'bg-slate-900 text-slate-50 font-mono text-sm' 
+                                                : activeTab === 'oosw' 
+                                                    ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800 dark:text-yellow-100' 
+                                                    : 'bg-gray-900 text-gray-100 dark:bg-gray-950 dark:text-gray-100'
+                                        }`}
+                                        placeholder={activeTab === 'code' ? "// Technical notes..." : "Enter details here..."}
+                                    />
                                 </div>
                             )}
                         </div>
@@ -529,38 +579,32 @@ Document:\n${content}`;
                         <div ref={messagesEndRef} />
                     </div>
 
-                    {permissions.canChat ? (
-                        <div className="p-5 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
-                            <button 
-                                onClick={handleMagicDraft}
-                                disabled={aiLoading || messages.length === 0}
-                                className="mb-3 text-xs flex items-center gap-1.5 text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 disabled:opacity-50 font-medium"
+                    <div className="p-5 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+                        <button 
+                            onClick={handleMagicDraft}
+                            disabled={aiLoading || messages.length === 0}
+                            className="mb-3 text-xs flex items-center gap-1.5 text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 disabled:opacity-50 font-medium"
+                        >
+                            {aiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+                            Magic Draft
+                        </button>
+                        <div className="flex gap-2">
+                            <Input
+                                value={newMessage}
+                                onChange={(e) => setNewMessage(e.target.value)}
+                                onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                                placeholder="Type a message..."
+                                className="flex-1"
+                            />
+                            <Button 
+                                onClick={handleSend}
+                                className="bg-indigo-600 hover:bg-indigo-700"
+                                size="icon"
                             >
-                                {aiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
-                                Magic Draft
-                            </button>
-                            <div className="flex gap-2">
-                                <Input
-                                    value={newMessage}
-                                    onChange={(e) => setNewMessage(e.target.value)}
-                                    onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-                                    placeholder="Type a message..."
-                                    className="flex-1"
-                                />
-                                <Button 
-                                    onClick={handleSend}
-                                    className="bg-indigo-600 hover:bg-indigo-700"
-                                    size="icon"
-                                >
-                                    <Send className="w-4 h-4" />
-                                </Button>
-                            </div>
+                                <Send className="w-4 h-4" />
+                            </Button>
                         </div>
-                    ) : (
-                        <div className="p-5 border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 text-center text-xs text-gray-400 dark:text-gray-500">
-                            Viewers cannot send messages
-                        </div>
-                    )}
+                    </div>
                 </div>
             </div>
 
