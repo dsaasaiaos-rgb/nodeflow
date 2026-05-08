@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Toaster } from "sonner";
 
 const GLOBAL_CSS = `
@@ -40,11 +40,14 @@ const GLOBAL_CSS = `
 }
 `;
 
-const toastOptions = {
-  className: "bg-slate-800 border border-slate-700 text-white",
-};
-
 export default function Layout({ children }) {
+  const toastOptions = useMemo(
+    () => ({
+      className: "bg-slate-800 border border-slate-700 text-white",
+    }),
+    []
+  );
+
   return (
     <div className="min-h-screen bg-slate-950 text-white">
       <style>{GLOBAL_CSS}</style>

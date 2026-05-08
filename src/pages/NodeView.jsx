@@ -97,9 +97,6 @@ export default function NodeViewPage() {
                     user={user} 
                     node={node} 
                     onUpdate={handleNodeUpdate}
-                    onDelete={() => {
-                        window.location.href = createPageUrl('Hub');
-                    }}
                 />
             </div>
         </div>
