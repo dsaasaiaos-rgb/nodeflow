@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { createPageUrl } from '@/utils';
 import VersionHistoryModal from '@/components/modals/VersionHistoryModal';
+import { toast } from 'sonner';
 
 export default function NodeContent({ user, node, onClose, onUpdate }) {
     // Local state for the node content
@@ -27,6 +28,7 @@ export default function NodeContent({ user, node, onClose, onUpdate }) {
     const [isOwner, setIsOwner] = useState(false);
     const [creatingInvite, setCreatingInvite] = useState(false);
     const [showVersionHistory, setShowVersionHistory] = useState(null);
+    const [showMobileChat, setShowMobileChat] = useState(false);
     const messagesEndRef = useRef(null);
 
     // Update local state when prop node changes
@@ -39,10 +41,10 @@ export default function NodeContent({ user, node, onClose, onUpdate }) {
     }, [node.id]);
 
     useEffect(() => {
-        if (messagesEndRef.current && activeTab === 'info') {
+        if (messagesEndRef.current) {
             messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
         }
-    }, [messages, activeTab]);
+    }, [messages]);
 
     const loadData = async () => {
         setIsLoading(true);
@@ -75,7 +77,7 @@ export default function NodeContent({ user, node, onClose, onUpdate }) {
             if (onUpdate) onUpdate(data.node);
         } catch (e) {
             console.error("Save error:", e);
-            alert("Error saving: " + (e.message || "Unknown error occurred"));
+            toast.error("Error saving: " + (e.message || "Unknown error occurred"));
         } finally {
             setIsSaving(false);
         }
@@ -92,7 +94,7 @@ export default function NodeContent({ user, node, onClose, onUpdate }) {
             setMessages([...messages, message]);
             setNewMessage('');
         } catch (e) {
-            alert("Failed to send: " + e.message);
+            toast.error("Failed to send: " + e.message);
         }
     };
 
@@ -145,7 +147,7 @@ Original Text:\n${currentContent}`;
             const { data: { text } } = await base44.functions.invoke('generateGeminiResponse', { prompt });
             await handleSaveDoc(key, text);
         } catch (e) {
-            alert("AI Polish failed");
+            toast.error("AI Polish failed. Please try again.");
         } finally {
             setAiLoading(false);
         }
@@ -153,7 +155,7 @@ Original Text:\n${currentContent}`;
 
     const handleSummarize = async (key, content) => {
         if (!content) {
-            alert("No content to summarize");
+            toast.error("No content to summarize");
             return;
         }
         setAiLoading(true);
@@ -174,7 +176,7 @@ Document:\n${content}`;
             setSummaries(prev => ({...prev, [key]: text}));
             setShowSummary(prev => ({...prev, [key]: true}));
         } catch (e) {
-            alert("AI Summarize failed");
+            toast.error("AI Summarize failed. Please try again.");
         } finally {
             setAiLoading(false);
         }
@@ -189,7 +191,7 @@ Document:\n${content}`;
             });
             setInviteCodes(prev => [...prev, { codeHash: code, roleToGrant, usesLeft: 1 }]);
         } catch (e) {
-            alert("Failed to create invite: " + e.message);
+            toast.error("Failed to create invite: " + e.message);
         } finally {
             setCreatingInvite(false);
         }
@@ -197,6 +199,7 @@ Document:\n${content}`;
 
     const copyToClipboard = (text) => {
         navigator.clipboard.writeText(text);
+        toast.success("Copied to clipboard!");
     };
 
     const hasChanges = JSON.stringify(node) !== JSON.stringify(editedNode);
@@ -261,21 +264,40 @@ Document:\n${content}`;
                 <div className="flex-1 flex flex-col min-w-0">
                     {/* Tabs */}
                     <div className="px-6 pt-4 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shrink-0">
-                        <div className="flex gap-6 overflow-x-auto">
-                            {tabs.map(tab => (
-                                <button
-                                    key={tab.id}
-                                    onClick={() => setActiveTab(tab.id)}
-                                    className={`pb-3 px-1 border-b-2 font-semibold text-sm flex items-center gap-2 whitespace-nowrap transition-all ${
-                                        activeTab === tab.id
-                                            ? 'border-indigo-600 dark:border-indigo-400 text-indigo-600 dark:text-indigo-400'
-                                            : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-                                    }`}
-                                >
-                                    <tab.icon className="w-4 h-4" />
-                                    {tab.label}
-                                </button>
-                            ))}
+                        <div className="flex items-center justify-between gap-4">
+                            <div className="flex gap-6 overflow-x-auto">
+                                {tabs.map(tab => (
+                                    <button
+                                        key={tab.id}
+                                        onClick={() => setActiveTab(tab.id)}
+                                        className={`pb-3 px-1 border-b-2 font-semibold text-sm flex items-center gap-2 whitespace-nowrap transition-all ${
+                                            activeTab === tab.id
+                                                ? 'border-indigo-600 dark:border-indigo-400 text-indigo-600 dark:text-indigo-400'
+                                                : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                                        }`}
+                                    >
+                                        <tab.icon className="w-4 h-4" />
+                                        {tab.label}
+                                    </button>
+                                ))}
+                            </div>
+                            <button
+                                onClick={() => setShowMobileChat(v => !v)}
+                                aria-label={showMobileChat ? "Hide chat" : "Show chat"}
+                                className={`lg:hidden flex-shrink-0 pb-3 flex items-center gap-1.5 text-sm font-semibold transition-all border-b-2 ${
+                                    showMobileChat
+                                        ? 'border-indigo-600 text-indigo-600 dark:border-indigo-400 dark:text-indigo-400'
+                                        : 'border-transparent text-gray-500 dark:text-gray-400'
+                                }`}
+                            >
+                                <MessageSquare className="w-4 h-4" />
+                                Chat
+                                {messages.length > 0 && (
+                                    <span className="bg-indigo-600 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center leading-none">
+                                        {messages.length > 9 ? '9+' : messages.length}
+                                    </span>
+                                )}
+                            </button>
                         </div>
                     </div>
 
@@ -500,11 +522,11 @@ Document:\n${content}`;
                                         defaultValue={docs[activeTab === 'code' ? 'siteCode' : activeTab] || ''}
                                         onBlur={(e) => handleSaveDoc(activeTab === 'code' ? 'siteCode' : activeTab, e.target.value)}
                                         className={`flex-1 min-h-[600px] leading-relaxed ${
-                                            activeTab === 'code' 
-                                                ? 'bg-slate-900 text-slate-50 font-mono text-sm' 
-                                                : activeTab === 'oosw' 
-                                                    ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800 dark:text-yellow-100' 
-                                                    : 'bg-gray-900 text-gray-100 dark:bg-gray-950 dark:text-gray-100'
+                                            activeTab === 'code'
+                                                ? 'bg-slate-900 text-slate-50 font-mono text-sm'
+                                                : activeTab === 'oosw'
+                                                    ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800 text-gray-900 dark:text-yellow-100'
+                                                    : 'bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-200 dark:border-gray-700'
                                         }`}
                                         placeholder={activeTab === 'code' ? "// Technical notes..." : "Enter details here..."}
                                     />
@@ -515,12 +537,19 @@ Document:\n${content}`;
                 </div>
 
                 {/* Chat Sidebar */}
-                <div className="w-96 border-l border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 flex-col hidden lg:flex shrink-0">
-                    <div className="p-5 border-b border-gray-200 dark:border-gray-800 bg-gradient-to-r from-gray-50 to-white dark:from-gray-900 dark:to-gray-900">
+                <div className={`border-l border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 flex-col shrink-0 ${showMobileChat ? 'flex w-full absolute inset-0 z-10' : 'hidden'} lg:flex lg:static lg:w-96 lg:z-auto`}>
+                    <div className="p-5 border-b border-gray-200 dark:border-gray-800 bg-gradient-to-r from-gray-50 to-white dark:from-gray-900 dark:to-gray-900 flex items-center justify-between">
                         <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-2 text-lg">
                             <MessageSquare className="w-5 h-5" />
                             Team Chat
                         </h3>
+                        <button
+                            onClick={() => setShowMobileChat(false)}
+                            aria-label="Close chat"
+                            className="lg:hidden p-1.5 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                        >
+                            <X className="w-5 h-5" />
+                        </button>
                     </div>
                     
                     <div className="flex-1 overflow-y-auto p-5 space-y-4 bg-gray-50 dark:bg-gray-950">

@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { History, Loader2, RotateCcw, X, Eye, ChevronDown, ChevronUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
+import { toast } from 'sonner';
 
 export default function VersionHistoryModal({ nodeId, docKey, currentContent, onClose, onRevert }) {
     const [versions, setVersions] = useState([]);
@@ -40,7 +41,7 @@ export default function VersionHistoryModal({ nodeId, docKey, currentContent, on
             await onRevert(version.content);
             onClose();
         } catch (e) {
-            alert("Failed to revert: " + e.message);
+            toast.error("Failed to revert: " + e.message);
         } finally {
             setIsReverting(false);
         }

@@ -3,9 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { CheckCircle2, Loader2 } from 'lucide-react';
+import { CheckCircle2, Loader2, Copy } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
+import { toast } from 'sonner';
 
 export default function CreateNodeModal({ onClose, onCreated }) {
     const [name, setName] = useState('');
@@ -33,7 +34,7 @@ export default function CreateNodeModal({ onClose, onCreated }) {
             setInviteCode(code);
             onCreated();
         } catch (err) {
-            alert("Failed to create node: " + err.message);
+            toast.error("Failed to create node: " + err.message);
             setIsSubmitting(false);
         }
     };
@@ -52,15 +53,38 @@ export default function CreateNodeModal({ onClose, onCreated }) {
                         </div>
                         <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Node Created!</h3>
                         <p className="text-gray-600 dark:text-gray-400 mb-6">Share this invite code with your team:</p>
-                        <div className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 p-6 rounded-xl mb-6 border border-indigo-100 dark:border-indigo-800">
+                        <div className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 p-6 rounded-xl mb-4 border border-indigo-100 dark:border-indigo-800 relative">
                             <p className="text-3xl font-mono font-bold text-center text-indigo-600 dark:text-indigo-400 tracking-wider">{inviteCode}</p>
+                            <button
+                                onClick={() => {
+                                    navigator.clipboard.writeText(inviteCode);
+                                    toast.success("Invite code copied!");
+                                }}
+                                className="absolute top-2 right-2 p-1.5 text-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 rounded-lg transition-colors"
+                                aria-label="Copy invite code"
+                            >
+                                <Copy className="w-4 h-4" />
+                            </button>
                         </div>
-                        <Button
-                            onClick={onClose}
-                            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-medium"
-                        >
-                            Done
-                        </Button>
+                        <div className="flex gap-3 mb-2">
+                            <Button
+                                onClick={() => {
+                                    navigator.clipboard.writeText(inviteCode);
+                                    toast.success("Invite code copied!");
+                                }}
+                                variant="outline"
+                                className="flex-1 py-3 rounded-xl flex items-center justify-center gap-2"
+                            >
+                                <Copy className="w-4 h-4" />
+                                Copy Code
+                            </Button>
+                            <Button
+                                onClick={onClose}
+                                className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-medium"
+                            >
+                                Done
+                            </Button>
+                        </div>
                     </div>
                 </motion.div>
             </div>
@@ -105,6 +129,11 @@ export default function CreateNodeModal({ onClose, onCreated }) {
                             type="url"
                             value={url}
                             onChange={(e) => setUrl(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && name && description && url && !isSubmitting) {
+                                    handleCreate();
+                                }
+                            }}
                             className="mt-1"
                             placeholder="https://example.com"
                         />

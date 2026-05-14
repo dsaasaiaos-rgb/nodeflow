@@ -34,15 +34,17 @@ export default function Sidebar({ user, nodes, currentNode, currentView, onSelec
         <>
             <button
                 onClick={() => setSidebarOpen(!sidebarOpen)}
+                aria-label={sidebarOpen ? "Close sidebar" : "Open sidebar"}
                 className="lg:hidden fixed top-4 left-4 z-50 bg-white dark:bg-gray-800 p-2.5 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
             >
                 {sidebarOpen ? <X className="w-5 h-5 dark:text-gray-300" /> : <Menu className="w-5 h-5 dark:text-gray-300" />}
             </button>
 
-            <motion.div 
+            <motion.div
                 initial={false}
                 animate={{ x: sidebarOpen ? 0 : -320 }}
-                className="fixed lg:static inset-y-0 left-0 z-40 w-80 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 transition-transform duration-200 ease-in-out lg:translate-x-0"
+                transition={{ type: 'tween', duration: 0.2, ease: 'easeInOut' }}
+                className="fixed lg:static inset-y-0 left-0 z-40 w-80 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800"
             >
                 <div className="flex flex-col h-full">
                     {/* Header */}
@@ -99,13 +101,14 @@ export default function Sidebar({ user, nodes, currentNode, currentView, onSelec
                             {nodes.map((node) => (
                                 <button
                                     key={node.id}
+                                    title={node.name}
                                     onClick={() => {
                                         onSelectNode(node);
                                         if (window.innerWidth < 1024) setSidebarOpen(false);
                                     }}
                                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-left ${
-                                        currentNode?.id === node.id 
-                                            ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800' 
+                                        currentNode?.id === node.id
+                                            ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800'
                                             : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
                                     }`}
                                 >
@@ -124,6 +127,7 @@ export default function Sidebar({ user, nodes, currentNode, currentView, onSelec
                     <div className="p-4 border-t border-gray-200 dark:border-gray-800 space-y-2">
                         <button
                             onClick={toggleDarkMode}
+                            aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
                             className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all"
                         >
                             {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
@@ -131,6 +135,7 @@ export default function Sidebar({ user, nodes, currentNode, currentView, onSelec
                         </button>
                         <button
                             onClick={handleLogout}
+                            aria-label="Sign out"
                             className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 rounded-xl transition-all"
                         >
                             <LogOut className="w-5 h-5" />

@@ -4,6 +4,7 @@ import Sidebar from '@/components/Sidebar';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, Send, Plus, MessageSquare, User, Users, CheckCircle, Search } from 'lucide-react';
+import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createPageUrl } from '@/utils';
 
@@ -106,7 +107,7 @@ export default function MessagesPage() {
             fetchMessages(activeConversation.id, true);
             loadConversations(true);
         } catch (e) {
-            alert("Failed to send");
+            toast.error("Failed to send message. Please try again.");
         }
     };
 
@@ -290,7 +291,7 @@ function NewChatModal({ isOpen, onClose, onCreated }) {
             });
             onCreated();
         } catch (e) {
-            alert(e.message);
+            toast.error(e.message || "Failed to create conversation.");
         } finally {
             setIsLoading(false);
         }
