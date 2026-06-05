@@ -114,12 +114,15 @@ export default function MessagesPage() {
     <div className="flex h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950 overflow-hidden">
             <Sidebar
         user={user}
-        nodes={[]} // Not needed for messaging view mainly
+        nodes={[]}
         currentView="messages"
         onSelectHub={() => window.location.href = createPageUrl('Hub')}
         onSelectNode={(n) => window.location.href = createPageUrl('NodeView') + '?nodeId=' + n.id}
         sidebarOpen={sidebarOpen}
-        setSidebarOpen={setSidebarOpen} />
+        setSidebarOpen={setSidebarOpen}
+        conversations={conversations}
+        activeConversation={activeConversation}
+        onSelectConversation={handleSelectConversation} />
       
 
             <div className="flex-1 flex overflow-hidden">

@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Home, LogOut, Menu, X, Moon, Sun, MessageSquare } from 'lucide-react';
+import { Home, LogOut, Menu, X, Moon, Sun, MessageSquare, ChevronDown, User, Users } from 'lucide-react';
 import { createPageUrl } from '@/utils';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 
-export default function Sidebar({ user, nodes, currentNode, currentView, onSelectNode, onSelectHub, sidebarOpen, setSidebarOpen }) {
+export default function Sidebar({ user, nodes, currentNode, currentView, onSelectNode, onSelectHub, sidebarOpen, setSidebarOpen, conversations = [], activeConversation, onSelectConversation }) {
     const [darkMode, setDarkMode] = useState(false);
+    const [messagesOpen, setMessagesOpen] = useState(currentView === 'messages');
 
     useEffect(() => {
         const saved = localStorage.getItem('darkMode') === 'true';
@@ -75,19 +76,63 @@ export default function Sidebar({ user, nodes, currentNode, currentView, onSelec
                             <span className="font-semibold">Overview</span>
                         </button>
 
-                        <button
-                            onClick={() => {
-                                window.location.href = createPageUrl('Messages');
-                            }}
-                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl mb-4 transition-all ${
-                                currentView === 'messages'
-                                    ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-200 dark:shadow-indigo-900/50'
-                                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
-                            }`}
-                        >
-                            <MessageSquare className="w-5 h-5" />
-                            <span className="font-semibold">Messages</span>
-                        </button>
+                        <div className="mb-4">
+                            <button
+                                onClick={() => {
+                                    if (currentView !== 'messages') {
+                                        window.location.href = createPageUrl('Messages');
+                                    } else {
+                                        setMessagesOpen(o => !o);
+                                    }
+                                }}
+                                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                                    currentView === 'messages'
+                                        ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-200 dark:shadow-indigo-900/50'
+                                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                                }`}
+                            >
+                                <MessageSquare className="w-5 h-5" />
+                                <span className="font-semibold flex-1 text-left">Messages</span>
+                                {currentView === 'messages' && (
+                                    <ChevronDown className={`w-4 h-4 transition-transform ${messagesOpen ? 'rotate-180' : ''}`} />
+                                )}
+                            </button>
+
+                            <AnimatePresence>
+                                {currentView === 'messages' && messagesOpen && (
+                                    <motion.div
+                                        initial={{ height: 0, opacity: 0 }}
+                                        animate={{ height: 'auto', opacity: 1 }}
+                                        exit={{ height: 0, opacity: 0 }}
+                                        transition={{ duration: 0.2 }}
+                                        className="overflow-hidden mt-1 ml-2 space-y-0.5"
+                                    >
+                                        {conversations.length === 0 && (
+                                            <p className="text-xs text-gray-400 dark:text-gray-500 px-3 py-2 italic">No conversations yet</p>
+                                        )}
+                                        {conversations.map(conv => (
+                                            <button
+                                                key={conv.id}
+                                                onClick={() => onSelectConversation?.(conv)}
+                                                className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left transition-all text-sm ${
+                                                    activeConversation?.id === conv.id
+                                                        ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400'
+                                                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                                                }`}
+                                            >
+                                                <div className={`p-1 rounded-full flex-shrink-0 ${conv.type === 'group' ? 'bg-purple-100 text-purple-600 dark:bg-purple-900/40 dark:text-purple-400' : 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400'}`}>
+                                                    {conv.type === 'group' ? <Users className="w-3 h-3" /> : <User className="w-3 h-3" />}
+                                                </div>
+                                                <span className="truncate font-medium flex-1">{conv.name || 'Chat'}</span>
+                                                {!conv.hasRead && (
+                                                    <span className="w-2 h-2 rounded-full bg-indigo-500 flex-shrink-0" />
+                                                )}
+                                            </button>
+                                        ))}
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
 
                         <div className="mb-3 mt-6">
                             <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-2">Active Projects</h3>
