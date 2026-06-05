@@ -222,10 +222,24 @@ export default function MessagesPage() {
                             </div>
                         </>
                     ) : (
-                        <div className="flex-1 flex items-center justify-center text-gray-400">
-                            <div className="text-center">
-                                <MessageSquare className="w-16 h-16 mx-auto mb-4 opacity-20" />
-                                <p>Select a conversation to start chatting</p>
+                        <div className="flex-1 flex flex-col">
+                            <div className="flex-1 flex items-center justify-center text-gray-400">
+                                <div className="text-center">
+                                    <MessageSquare className="w-16 h-16 mx-auto mb-4 opacity-20" />
+                                    <p>Select a conversation to start chatting</p>
+                                </div>
+                            </div>
+                            <div className="p-4 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
+                                <div className="flex gap-2">
+                                    <Input
+                                        disabled
+                                        placeholder="Select a conversation to send a message..."
+                                        className="flex-1 opacity-50 cursor-not-allowed"
+                                    />
+                                    <Button disabled className="opacity-50 cursor-not-allowed">
+                                        <Send className="w-4 h-4" />
+                                    </Button>
+                                </div>
                             </div>
                         </div>
                     )}
