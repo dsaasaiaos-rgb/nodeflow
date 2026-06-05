@@ -124,48 +124,48 @@ export default function MessagesPage() {
 
             <div className="flex-1 flex overflow-hidden">
                 {/* Conversations List */}
-                <div className={`w-full md:w-80 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex flex-col ${activeConversation ? 'hidden md:flex' : 'flex'}`}>
-                    <div className="p-4 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center hidden">
-                        <h2 className="text-xl font-bold text-gray-900 dark:text-white">Messages</h2>
-                        <Button onClick={() => setShowNewChatModal(true)} size="icon" className="h-8 w-8 rounded-full bg-indigo-600 hover:bg-indigo-700">
-                            <Plus className="w-4 h-4" />
-                        </Button>
-                    </div>
-                    <div className="flex-1 overflow-y-auto hidden">
-                        {conversations.length === 0 ?
-            <div className="p-8 text-center text-gray-500 hidden">
-                                <MessageSquare className="w-12 h-12 mx-auto mb-2 opacity-20" />
-                                <p>No conversations yet</p>
-                                <Button variant="link" onClick={() => setShowNewChatModal(true)}>Start one</Button>
-                            </div> :
+                
 
-            conversations.map((conv) =>
-            <button
-              key={conv.id}
-              onClick={() => handleSelectConversation(conv)}
-              className={`w-full p-4 flex items-start gap-3 border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-left ${
-              activeConversation?.id === conv.id ? 'bg-indigo-50 dark:bg-indigo-900/20' : ''}`
-              }>
-              
-                                    <div className={`p-2 rounded-full ${conv.type === 'group' ? 'bg-purple-100 text-purple-600' : 'bg-blue-100 text-blue-600'}`}>
-                                        {conv.type === 'group' ? <Users className="w-5 h-5" /> : <User className="w-5 h-5" />}
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <div className="flex justify-between items-baseline mb-1">
-                                            <span className="font-semibold text-gray-900 dark:text-white truncate">
-                                                {conv.name || 'Chat'}
-                                            </span>
-                                            {!conv.hasRead && <div className="w-2.5 h-2.5 bg-blue-500 rounded-full" />}
-                                        </div>
-                                        <p className={`text-sm truncate ${!conv.hasRead ? 'font-semibold text-gray-900 dark:text-white' : 'text-gray-500'}`}>
-                                            {conv.lastMessagePreview || 'No messages'}
-                                        </p>
-                                    </div>
-                                </button>
-            )
-            }
-                    </div>
-                </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
 
                 {/* Chat Area */}
                 <div className={`flex-1 flex flex-col bg-gray-50 dark:bg-gray-950 ${!activeConversation ? 'hidden md:flex' : 'flex'}`}>
