@@ -1,0 +1,89 @@
+{
+  "name": "Node",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Client or project name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Project description"
+    },
+    "url": {
+      "type": "string",
+      "description": "Website URL"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Active",
+        "In Progress",
+        "On Hold",
+        "Completed"
+      ],
+      "default": "Active",
+      "description": "Current project status"
+    },
+    "ownerUserId": {
+      "type": "string",
+      "description": "User ID of the node owner"
+    }
+  },
+  "required": [
+    "name",
+    "description",
+    "url",
+    "ownerUserId"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "data.ownerUserId": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "data.ownerUserId": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.ownerUserId": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.ownerUserId": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

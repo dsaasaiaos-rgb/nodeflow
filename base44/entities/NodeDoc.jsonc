@@ -1,0 +1,32 @@
+{
+  "name": "NodeDoc",
+  "type": "object",
+  "properties": {
+    "nodeId": {
+      "type": "string",
+      "description": "Reference to Node"
+    },
+    "key": {
+      "type": "string",
+      "enum": [
+        "agreement",
+        "sow",
+        "oosw",
+        "siteCode"
+      ],
+      "description": "Document type identifier"
+    },
+    "content": {
+      "type": "string",
+      "description": "Document content"
+    },
+    "updatedBy": {
+      "type": "string",
+      "description": "User ID of last updater"
+    }
+  },
+  "required": [
+    "nodeId",
+    "key"
+  ]
+}

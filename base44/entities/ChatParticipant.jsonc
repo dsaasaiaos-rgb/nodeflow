@@ -1,0 +1,23 @@
+{
+  "name": "ChatParticipant",
+  "type": "object",
+  "properties": {
+    "conversationId": {
+      "type": "string",
+      "description": "Reference to ChatConversation"
+    },
+    "userId": {
+      "type": "string",
+      "description": "Reference to User"
+    },
+    "hasRead": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether user has read the latest messages"
+    }
+  },
+  "required": [
+    "conversationId",
+    "userId"
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "name": "ChatMessage",
+  "type": "object",
+  "properties": {
+    "conversationId": {
+      "type": "string",
+      "description": "Reference to ChatConversation"
+    },
+    "senderId": {
+      "type": "string",
+      "description": "User ID of the sender"
+    },
+    "senderName": {
+      "type": "string",
+      "description": "Name of the sender"
+    },
+    "content": {
+      "type": "string",
+      "description": "Message content"
+    }
+  },
+  "required": [
+    "conversationId",
+    "senderId",
+    "content"
+  ]
+}

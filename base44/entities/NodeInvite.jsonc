@@ -1,0 +1,83 @@
+{
+  "name": "NodeInvite",
+  "type": "object",
+  "properties": {
+    "nodeId": {
+      "type": "string",
+      "description": "Reference to Node"
+    },
+    "codeHash": {
+      "type": "string",
+      "description": "Invite code (in real app should be hashed)"
+    },
+    "roleToGrant": {
+      "type": "string",
+      "enum": [
+        "client",
+        "member"
+      ],
+      "default": "client",
+      "description": "Role to grant when redeemed"
+    },
+    "usesLeft": {
+      "type": "number",
+      "default": 1,
+      "description": "Number of times code can be used"
+    }
+  },
+  "required": [
+    "nodeId",
+    "codeHash",
+    "roleToGrant"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

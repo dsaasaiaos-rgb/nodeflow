@@ -1,0 +1,35 @@
+{
+  "name": "ChatConversation",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "direct",
+        "group"
+      ],
+      "description": "Type of conversation"
+    },
+    "name": {
+      "type": "string",
+      "description": "Name of the group chat (optional for direct)"
+    },
+    "ownerId": {
+      "type": "string",
+      "description": "User ID of the group creator/owner"
+    },
+    "lastMessageAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp of the last message"
+    },
+    "lastMessagePreview": {
+      "type": "string",
+      "description": "Preview of the last message"
+    }
+  },
+  "required": [
+    "type",
+    "ownerId"
+  ]
+}

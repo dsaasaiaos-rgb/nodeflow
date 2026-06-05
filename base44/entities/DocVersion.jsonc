@@ -1,0 +1,38 @@
+{
+  "name": "DocVersion",
+  "type": "object",
+  "properties": {
+    "nodeId": {
+      "type": "string",
+      "description": "Reference to Node"
+    },
+    "key": {
+      "type": "string",
+      "enum": [
+        "agreement",
+        "sow",
+        "oosw",
+        "siteCode"
+      ],
+      "description": "Document type"
+    },
+    "content": {
+      "type": "string",
+      "description": "Document content at this version"
+    },
+    "savedBy": {
+      "type": "string",
+      "description": "User ID who saved this version"
+    },
+    "savedByName": {
+      "type": "string",
+      "description": "User name who saved this version"
+    }
+  },
+  "required": [
+    "nodeId",
+    "key",
+    "content",
+    "savedBy"
+  ]
+}

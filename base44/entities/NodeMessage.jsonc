@@ -1,0 +1,69 @@
+{
+  "name": "NodeMessage",
+  "type": "object",
+  "properties": {
+    "nodeId": {
+      "type": "string",
+      "description": "Reference to Node"
+    },
+    "userId": {
+      "type": "string",
+      "description": "Reference to User who sent message"
+    },
+    "userName": {
+      "type": "string",
+      "description": "Name of user at time of sending"
+    },
+    "body": {
+      "type": "string",
+      "description": "Message content"
+    }
+  },
+  "required": [
+    "nodeId",
+    "userId",
+    "userName",
+    "body"
+  ],
+  "rls": {
+    "create": {
+      "userId": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "userId": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "userId": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "userId": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
