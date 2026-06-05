@@ -72,7 +72,7 @@ export default function Sidebar({ user, nodes, currentNode, currentView, onSelec
                             }`}
                         >
                             <Home className="w-5 h-5" />
-                            <span className="font-semibold">{user?.role === 'admin' ? 'Master Hub' : 'My Nodes'}</span>
+                            <span className="font-semibold">Overview</span>
                         </button>
 
                         <button
