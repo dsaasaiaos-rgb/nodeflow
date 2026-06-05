@@ -56,10 +56,10 @@ export default function AboutPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-14">
                     {[
-                        { icon: Layers, title: 'Project Nodes', desc: 'Each project lives in its own structured workspace with docs, messages, and members.' },
-                        { icon: MessageSquare, title: 'Built-in Messaging', desc: 'Direct and group chats keep communication tied to the right context.' },
-                        { icon: Users, title: 'Role-Based Access', desc: 'Owners, members, and clients each get the right level of visibility and control.' },
-                    ].map(({ icon: Icon, title, desc }) => (
+                        { Icon: Layers, title: 'Project Nodes', desc: 'Each project lives in its own structured workspace with docs, messages, and members.' },
+                        { Icon: MessageSquare, title: 'Built-in Messaging', desc: 'Direct and group chats keep communication tied to the right context.' },
+                        { Icon: Users, title: 'Role-Based Access', desc: 'Owners, members, and clients each get the right level of visibility and control.' },
+                    ].map(({ Icon, title, desc }) => (
                         <div key={title} className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
                             <div className="p-2.5 bg-indigo-100 dark:bg-indigo-900/40 rounded-xl w-fit mb-4">
                                 <Icon className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
