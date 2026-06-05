@@ -19,6 +19,11 @@
       ],
       "default": "member",
       "description": "Role in the node"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 1000,
+      "description": "Optional description or notes about this member"
     }
   },
   "required": [

@@ -26,6 +26,11 @@
     "lastMessagePreview": {
       "type": "string",
       "description": "Preview of the last message"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 1000,
+      "description": "Optional description of the conversation"
     }
   },
   "required": [

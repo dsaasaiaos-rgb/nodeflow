@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Home, LogOut, Menu, X, Moon, Sun, MessageSquare, ChevronDown, User, Users } from 'lucide-react';
+import { Home, LogOut, Menu, X, Moon, Sun, MessageSquare, ChevronDown, User, Users, Info, Mail } from 'lucide-react';
 import { createPageUrl } from '@/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
+import { Link } from 'react-router-dom';
 
 export default function Sidebar({ user, nodes, currentNode, currentView, onSelectNode, onSelectHub, sidebarOpen, setSidebarOpen, conversations = [], activeConversation, onSelectConversation }) {
     const [darkMode, setDarkMode] = useState(false);
@@ -167,6 +168,15 @@ export default function Sidebar({ user, nodes, currentNode, currentView, onSelec
 
                     {/* Footer */}
                     <div className="p-4 border-t border-gray-200 dark:border-gray-800 space-y-2">
+                        <div className="flex gap-2 px-1 pb-1">
+                            <Link to="/about" className="text-xs text-gray-400 dark:text-gray-500 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors flex items-center gap-1">
+                                <Info className="w-3 h-3" /> About
+                            </Link>
+                            <span className="text-gray-300 dark:text-gray-600">·</span>
+                            <Link to="/contact" className="text-xs text-gray-400 dark:text-gray-500 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors flex items-center gap-1">
+                                <Mail className="w-3 h-3" /> Contact
+                            </Link>
+                        </div>
                         <button
                             onClick={toggleDarkMode}
                             className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all"

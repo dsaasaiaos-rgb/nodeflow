@@ -14,6 +14,11 @@
       "type": "boolean",
       "default": true,
       "description": "Whether user has read the latest messages"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 1000,
+      "description": "Optional description or notes about this participant"
     }
   },
   "required": [

@@ -23,6 +23,11 @@
       "type": "number",
       "default": 1,
       "description": "Number of times code can be used"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 1000,
+      "description": "Optional description or notes about this invite"
     }
   },
   "required": [
